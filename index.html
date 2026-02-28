@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Let's Go! – Turn your day into a moment to connect 🌈🙏</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; background:#f9f9ff; }
+    h1 { text-align:center; color:#d32f2f; }
+    .event { border:1px solid #ddd; border-radius:12px; padding:16px; margin:16px 0; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .title { font-size:1.4em; margin:0 0 8px; }
+    .meta { color:#555; margin:4px 0; }
+    .signup-form { margin-top:12px; display:none; }
+    .signup-form.show { display:block; }
+    input, button { padding:10px; margin:6px 0; font-size:1em; border-radius:6px; border:1px solid #ccc; width:100%; box-sizing:border-box; }
+    button { background:#4caf50; color:white; border:none; cursor:pointer; }
+    button:hover { background:#43a047; }
+  </style>
+</head>
+<body>
+  <h1>Let's Go! 🌟<br>Turn your day into a moment to connect</h1>
+  
+  <div id="events-list"></div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_WEB_APP_ID/exec";   // ← paste here
+
+    async function loadEvents() {
+      const res = await fetch(`${SCRIPT_URL}?action=getEvents`);
+      const data = await res.json();
+      const container = document.getElementById("events-list");
+      container.innerHTML = "";
+
+      data.events.forEach(ev => {
+        const div = document.createElement("div");
+        div.className = "event";
+        div.innerHTML = `
+          <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
+          <div class="meta">with ${ev.host} • ${ev.count} people signed up ${ev.max ? `(max ${ev.max})` : ""} 🔥</div>
+          <div>${ev.desc}</div>
+          <button onclick="toggleForm('form-${ev.id}')">Sign up! ➡️</button>
+          
+          <div id="form-${ev.id}" class="signup-form">
+            <input id="name-${ev.id}" placeholder="Your name" required>
+            <input id="phone-${ev.id}" placeholder="Phone number" type="tel">
+            <input id="email-${ev.id}" placeholder="Email" type="email" required>
+            <button onclick="submitSignup(${ev.id})">Submit & Join ✨</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function getEmoji(title) {
+      if (title.toLowerCase().includes("sing")) return "🎤🎶";
+      if (title.toLowerCase().includes("prayer")) return "🙏✨";
+      return "🌈";
+    }
+
+    function toggleForm(id) {
+      document.getElementById(id).classList.toggle("show");
+    }
+
+    async function submitSignup(eventId) {
+      const name  = document.getElementById(`name-${eventId}`).value.trim();
+      const phone = document.getElementById(`phone-${eventId}`).value.trim();
+      const email = document.getElementById(`email-${eventId}`).value.trim();
+
+      if (!name || !email) {
+        alert("Please fill name and email 🌟");
+        return;
+      }
+
+      const url = `${SCRIPT_URL}?action=signup&eventId=${eventId}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}`;
+      
+      try {
+        const res = await fetch(url);
+        const result = await res.json();
+        if (result.success) {
+          alert("Thank you! You're signed up! 🎉");
+          loadEvents();  // refresh list
+        } else {
+          alert("Sorry — " + result.error);
+        }
+      } catch(e) {
+        alert("Error — check connection");
+      }
+    }
+
+    // Load on start
+    loadEvents();
+  </script>
+</body>
+</html>
