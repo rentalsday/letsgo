@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Let's Go! – Turn your day into a moment to connect 🌈🙏</title>
+  <title>Let's Go! 🌈🙏</title>
   
   <style>
     :root {
@@ -323,11 +323,8 @@
             <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
             <div class="meta">
               with <strong>${ev.host}</strong> 
-              • ${ev.count} joined 
-              ${ev.max ? `(max ${ev.max})` : ""} 🔥 
-              • ${ev.category || 'Other'}
+              • ${ev.count} joined
             </div>
-            <div class="desc">${ev.desc || ""}</div>
             <button class="action-btn" onclick="toggleForm('form-${ev.id}')">Sign up now! ➡️</button>
           </div>
           <div id="form-${ev.id}" class="signup-form">
