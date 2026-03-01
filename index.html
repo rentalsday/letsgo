@@ -158,7 +158,7 @@
       font-size: clamp(1.4rem, 5vw, 1.9rem);
       font-weight: 900;
       color: white;
-      background: var(--accent);              /* solid green again */
+      background: var(--accent);
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
@@ -169,7 +169,7 @@
 
     .action-btn:hover {
       transform: scale(1.06) translateY(-3px);
-      box-shadow: 0 10px 25px rgba(76,175,80,0.5);  /* green glow */
+      box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
     /* ──────────────────────────────────────
@@ -237,7 +237,7 @@
     }
 
     .modal-submit {
-      background: var(--primary-dark);          /* vivid magenta/pink - complementary to green */
+      background: var(--primary-dark);
       color: white;
       font-weight: 900;
       font-size: clamp(1.5rem, 6vw, 2.2rem);
@@ -258,7 +258,7 @@
 
     .modal-submit:hover {
       transform: scale(1.08) translateY(-4px);
-      box-shadow: 0 12px 30px rgba(194,24,91,0.6);  /* pink glow */
+      box-shadow: 0 12px 30px rgba(194,24,91,0.6);
     }
 
     .modal-submit.loading {
@@ -287,7 +287,7 @@
 <body data-theme="dark">
 
   <header>
-    <h1>Do something fun!</h1>
+    <h1>Do something!</h1>
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
@@ -386,7 +386,7 @@
               ${ev.max ? `(max ${ev.max})` : ""} 🔥
             </div>
             <div class="desc">${ev.desc || ""}</div>
-            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">I'm in! 🎉</button>
+            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">Count me in! 🎉</button>
           </div>
         `;
         container.appendChild(div);
@@ -426,7 +426,7 @@
       // Show spinner on button
       submitBtn.classList.add("loading");
       submitBtn.disabled = true;
-      submitBtn.innerHTML = ""; // remove text, spinner appears via ::after
+      submitBtn.innerHTML = "";
 
       const url = `${SCRIPT_URL}?action=signup&eventId=${currentEventId}&name=${encodeURIComponent(name)}&phone=&email=${encodeURIComponent(email)}`;
 
@@ -437,14 +437,13 @@
         if (result.success) {
           alert("You're in! 🙌✨");
           closeModal();
-          loadEvents(); // refresh
+          loadEvents();
         } else {
           alert("Sorry — something went wrong. Try again.");
         }
       } catch (err) {
         alert("Connection issue — check your internet 🌐");
       } finally {
-        // Reset button state
         submitBtn.classList.remove("loading");
         submitBtn.disabled = false;
         submitBtn.innerHTML = "Blast off! 🚀";
