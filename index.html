@@ -280,7 +280,7 @@
 <body data-theme="dark">
 
   <header>
-    <h1>Do something!</h1>
+    <h1>Do something fun!</h1>
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
@@ -305,7 +305,7 @@
       <form class="modal-form">
         <input id="modal-name"  placeholder="Your name *"     required>
         <input id="modal-email" placeholder="Email *"         type="email" required>
-        <button type="button" class="modal-submit" id="modal-submit-btn" onclick="submitModalForm()">Join this moment ✨</button>
+        <button type="button" class="modal-submit" id="modal-submit-btn" onclick="submitModalForm()">Blast off!</button>
       </form>
     </div>
   </div>
@@ -379,7 +379,7 @@
               ${ev.max ? `(max ${ev.max})` : ""} 🔥
             </div>
             <div class="desc">${ev.desc || ""}</div>
-            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">Sign up now! ➡️</button>
+            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">I'm in!</button>
           </div>
         `;
         container.appendChild(div);
@@ -428,19 +428,19 @@
         const result = await res.json();
 
         if (result.success) {
-          alert("You're signed up. Thank you!");
+          alert("You're in! 🙌✨");
           closeModal();
           loadEvents(); // refresh
         } else {
-          alert("Sorry — " + (result.error || "something went wrong. Please try again."));
+          alert("Sorry — something went wrong. Try again.");
         }
       } catch (err) {
-        alert("Connection issue — please check your internet 🌐");
+        alert("Connection issue — check your internet 🌐");
       } finally {
         // Reset button state
         submitBtn.classList.remove("loading");
         submitBtn.disabled = false;
-        submitBtn.innerHTML = "Join this moment ✨";
+        submitBtn.innerHTML = "Blast off!";
       }
     }
 
