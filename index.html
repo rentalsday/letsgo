@@ -379,10 +379,10 @@
             <div class="meta">
               with <strong>${ev.host}</strong> 
               • ${ev.count} joined 
-              ${ev.max ? `(max ${ev.max})` : ""} 🔥 
-              • ${ev.category || 'Other'}
+              🔥 
+             
             </div>
-            <div class="desc">${ev.desc || ""}</div>
+           
             <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">Sign up now! ➡️</button>
           </div>
         `;
