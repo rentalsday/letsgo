@@ -294,7 +294,7 @@
 
   <div id="events-list" style="display:none;"></div>
 
-  <!-- ──── Global Signup Modal ──── -->
+  <!-- Global Signup Modal -->
   <div id="signup-modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -312,7 +312,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWOQ79xr1zNvPNGKJHSDKQlcumew0tfW0ZYX_JUAzEJvi-dO79Gmb5mHmD64pEtqS3/exec";
 
-    // Theme toggle (dark default)
+    // Theme (dark default)
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
@@ -368,6 +368,7 @@
 
       events.forEach((ev, i) => {
         const imgSrc = ev.imageUrl || DEFAULT_IMAGE;
+
         const div = document.createElement("div");
         div.className = "event";
         div.style.animationDelay = `${i * 100}ms`;
@@ -379,10 +380,10 @@
             <div class="meta">
               with <strong>${ev.host}</strong> 
               • ${ev.count} joined 
-              🔥 
-             
+              ${ev.max ? `(max ${ev.max})` : ""} 🔥 
+              • ${ev.category || 'Other'}
             </div>
-           
+            <div class="desc">${ev.desc || ""}</div>
             <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">Sign up now! ➡️</button>
           </div>
         `;
@@ -404,7 +405,6 @@
       currentEventId = null;
     }
 
-    // Close modal when clicking outside content
     document.getElementById("signup-modal").addEventListener("click", (e) => {
       if (e.target === document.getElementById("signup-modal")) {
         closeModal();
@@ -432,7 +432,7 @@
         if (result.success) {
           alert("Thank you! You're signed up — check your email for confirmation 🙌✨");
           closeModal();
-          loadEvents(); // refresh counts
+          loadEvents(); // refresh
         } else {
           alert("Sorry — " + (result.error || "something went wrong. Please try again."));
         }
@@ -457,7 +457,6 @@
       return "🌟";
     }
 
-    // Initial load
     loadEvents();
   </script>
 </body>
