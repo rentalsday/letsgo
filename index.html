@@ -7,9 +7,25 @@
   
   <style>
     :root {
-      --primary: #e91e63;     /* warm pink-red for energy & love */
+      --primary: #e91e63;
       --primary-dark: #c2185b;
-      --accent: #4caf50;      /* green for join/action */
+      --accent: #4caf50;
+      --accent-dark: #43a047;
+      --bg: #0d1117;
+      --card: #161b22;
+      --text: #e6edf3;
+      --text-light: #8b949e;
+      --border: #30363d;
+      --shadow-sm: 0 4px 16px rgba(0,0,0,0.4);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.5);
+      --radius: 16px;
+      --transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] {
+      --primary: #e91e63;
+      --primary-dark: #c2185b;
+      --accent: #4caf50;
       --accent-dark: #43a047;
       --bg: #f8f9ff;
       --card: #ffffff;
@@ -18,48 +34,86 @@
       --border: #e0e0ff;
       --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
       --shadow-md: 0 8px 24px rgba(0,0,0,0.12);
-      --radius: 16px;
-      --transition: all 0.22s ease;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: linear-gradient(to bottom, var(--bg), #f0f2ff);
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       padding: 24px 16px;
       line-height: 1.5;
+      transition: background 0.4s, color 0.4s;
     }
 
     header {
-      text-align: center;
-      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
 
     h1 {
-      font-size: clamp(1.8rem, 7vw, 2.5rem);
+      font-size: clamp(1.9rem, 7vw, 2.6rem);
       font-weight: 800;
       color: var(--primary);
-      margin-bottom: 8px;
       letter-spacing: -0.5px;
     }
 
-    .tagline {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      opacity: 0.9;
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: var(--transition);
     }
+
+    .theme-toggle:hover { transform: scale(1.15); }
+
+    .filter-container {
+      margin: 0 auto 24px;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    select {
+      padding: 12px 16px;
+      font-size: 1.05rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      width: 100%;
+      max-width: 320px;
+      cursor: pointer;
+    }
+
+    #loading {
+      text-align: center;
+      font-size: 1.3rem;
+      color: var(--text-light);
+      padding: 80px 0;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 5px solid var(--border);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     #events-list {
       display: grid;
       gap: 20px;
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
     }
 
@@ -70,41 +124,42 @@
       box-shadow: var(--shadow-sm);
       transition: var(--transition);
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.6s forwards;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s forwards;
     }
 
-    .event:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
+    .event:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+
+    .event-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #222;
     }
 
     .event-header {
-      padding: 20px 20px 12px;
+      padding: 20px;
     }
 
     .title {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 700;
       margin-bottom: 6px;
-      color: var(--text);
     }
 
     .meta {
       font-size: 0.95rem;
       color: var(--text-light);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .desc {
       font-size: 1rem;
       color: var(--text);
       margin-bottom: 16px;
-      line-height: 1.45;
     }
 
     .action-btn {
-      display: block;
       width: 100%;
       padding: 14px;
       font-size: 1.05rem;
@@ -115,40 +170,37 @@
       border-radius: var(--radius);
       cursor: pointer;
       transition: var(--transition);
-      margin-top: 8px;
     }
 
-    .action-btn:hover,
-    .action-btn:active {
-      background: var(--accent-dark);
-      transform: scale(1.02);
-    }
+    .action-btn:hover { background: var(--accent-dark); transform: scale(1.02); }
 
     .signup-form {
-      padding: 0 20px 20px;
+      padding: 0 20px 24px;
       display: none;
-      background: #f9faff;
+      background: rgba(0,0,0,0.03);
       border-top: 1px solid var(--border);
     }
 
-    .signup-form.show {
-      display: block;
-    }
+    [data-theme="light"] .signup-form { background: rgba(0,0,0,0.02); }
+
+    .signup-form.show { display: block; }
 
     input {
       width: 100%;
       padding: 14px 16px;
       margin: 10px 0;
-      border: 1.5px solid #d0d0ff;
+      border: 1.5px solid var(--border);
       border-radius: 12px;
       font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
       transition: border-color 0.2s;
     }
 
     input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.15);
+      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
     }
 
     .submit-btn {
@@ -165,93 +217,159 @@
       transition: var(--transition);
     }
 
-    .submit-btn:hover,
-    .submit-btn:active {
-      background: var(--primary-dark);
-      transform: scale(1.02);
-    }
+    .submit-btn:hover { background: var(--primary-dark); transform: scale(1.02); }
 
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
-    /* Wider screens — cards become more spacious */
     @media (min-width: 640px) {
-      body { padding: 40px 24px; }
-      #events-list { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
-      .event-header { padding: 24px 28px 16px; }
-      .title { font-size: 1.55rem; }
-    }
-
-    @media (min-width: 900px) {
-      h1 { font-size: 3rem; }
+      body { padding: 32px 24px; }
+      #events-list { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+      .event-img { height: 200px; }
     }
   </style>
 </head>
-<body>
+<body data-theme="dark">
 
   <header>
     <h1>Let's Go! 🌟</h1>
-    <p class="tagline">Turn your day into a moment to connect 🌈🙏</p>
+    <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
-  <div id="events-list"></div>
+  <div class="filter-container">
+    <select id="categoryFilter">
+      <option value="all">All Moments</option>
+    </select>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    Loading beautiful moments...
+  </div>
+
+  <div id="events-list" style="display:none;"></div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWOQ79xr1zNvPNGKJHSDKQlcumew0tfW0ZYX_JUAzEJvi-dO79Gmb5mHmD64pEtqS3/exec";
 
+    // Theme (dark default)
+    const themeBtn = document.getElementById('themeBtn');
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    const initialTheme = savedTheme || 'dark';
+    html.setAttribute('data-theme', initialTheme);
+    themeBtn.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
+
+    themeBtn.addEventListener('click', () => {
+      const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    // Category images (fallback)
+    const categoryImages = {
+      "music/singing": "https://ca-times.brightspotcdn.com/dims4/default/9d6fea9/2147483647/strip/true/crop/1600x840+0+113/resize/1200x630!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F82%2F20%2F2d201b52480c8568b5e05fa8f484%2Fla-wk-la-coolest-choir-005.jpg",
+      "prayer/spiritual": "https://thumbs.dreamstime.com/b/group-christian-people-praying-together-group-christian-people-praying-together-99486754.jpg",
+      "community/gathering": "https://www.eventbookings.com/wp-content/uploads/2024/02/Creative-Outdoor-Event-Ideas-for-Your-Next-Gathering.jpg",
+      "other": "https://boomset.com/wp-content/uploads/2025/07/60-Fun-Social-Event-Ideas-for-Every-Occasion-1024x574.webp",
+      "default": "https://thumbs.dreamstime.com/b/diverse-choir-singing-together-under-musical-notes-joyful-celebration-community-harmony-music-voices-raised-364096792.jpg"
+    };
+
+    let allEvents = []; // store full list
+
     async function loadEvents() {
+      const loadingEl = document.getElementById("loading");
+      const listEl = document.getElementById("events-list");
+      const filterEl = document.getElementById("categoryFilter");
+
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getEvents`);
-        if (!res.ok) throw new Error("Network error");
+        if (!res.ok) throw new Error();
         const data = await res.json();
-        const container = document.getElementById("events-list");
-        container.innerHTML = "";
+        allEvents = data.events;
 
-        data.events.forEach((ev, index) => {
-          const div = document.createElement("div");
-          div.className = "event";
-          div.style.animationDelay = `${index * 80}ms`;
-
-          div.innerHTML = `
-            <div class="event-header">
-              <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
-              <div class="meta">with <strong>${ev.host}</strong> • ${ev.count} people signed up ${ev.max ? ` (max ${ev.max})` : ""} 🔥</div>
-              <div class="desc">${ev.desc || ""}</div>
-              <button class="action-btn" onclick="toggleForm('form-${ev.id}')">Sign up now! ➡️</button>
-            </div>
-            
-            <div id="form-${ev.id}" class="signup-form">
-              <input id="name-${ev.id}" placeholder="Your name *" required>
-              <input id="phone-${ev.id}" placeholder="Phone number" type="tel">
-              <input id="email-${ev.id}" placeholder="Email *" type="email" required>
-              <button class="submit-btn" onclick="submitSignup(${ev.id})">Join this moment ✨</button>
-            </div>
-          `;
-          container.appendChild(div);
+        // Populate category filter
+        const categories = new Set(["all"]);
+        allEvents.forEach(ev => {
+          const cat = (ev.category || "Other").toLowerCase();
+          categories.add(cat);
         });
+        filterEl.innerHTML = '';
+        categories.forEach(cat => {
+          const option = document.createElement("option");
+          option.value = cat;
+          option.textContent = cat === "all" ? "All Moments" : cat.charAt(0).toUpperCase() + cat.slice(1);
+          filterEl.appendChild(option);
+        });
+
+        renderEvents(allEvents);
+        loadingEl.style.display = "none";
+        listEl.style.display = "grid";
       } catch (err) {
-        document.getElementById("events-list").innerHTML = `<p style="text-align:center; color:#c00;">Couldn't load events… please try again 🌧️</p>`;
+        loadingEl.innerHTML = `<p style="color:#e74c3c; font-size:1.2rem;">Couldn't load events… please try again later 🌧️</p>`;
       }
     }
+
+    function renderEvents(events) {
+      const container = document.getElementById("events-list");
+      container.innerHTML = "";
+
+      events.forEach((ev, i) => {
+        const catLower = (ev.category || "Other").toLowerCase();
+        let imgSrc = categoryImages["default"];
+        if (catLower.includes("sing") || catLower.includes("music")) imgSrc = categoryImages["music/singing"];
+        else if (catLower.includes("pray") || catLower.includes("spirit")) imgSrc = categoryImages["prayer/spiritual"];
+        else if (catLower.includes("commun") || catLower.includes("gather")) imgSrc = categoryImages["community/gathering"];
+        else if (categoryImages[catLower]) imgSrc = categoryImages[catLower];
+
+        const div = document.createElement("div");
+        div.className = "event";
+        div.style.animationDelay = `${i * 100}ms`;
+
+        div.innerHTML = `
+          <img class="event-img" src="${imgSrc}" alt="${ev.title}" loading="lazy" onerror="this.src='${categoryImages.default}'">
+          <div class="event-header">
+            <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
+            <div class="meta">with <strong>${ev.host}</strong> • ${ev.count} joined ${ev.max ? `(max ${ev.max})` : ""} 🔥 • ${ev.category || 'Other'}</div>
+            <div class="desc">${ev.desc || ""}</div>
+            <button class="action-btn" onclick="toggleForm('form-${ev.id}')">Sign up now! ➡️</button>
+          </div>
+          <div id="form-${ev.id}" class="signup-form">
+            <input id="name-${ev.id}" placeholder="Your name *" required>
+            <input id="phone-${ev.id}" placeholder="Phone number" type="tel">
+            <input id="email-${ev.id}" placeholder="Email *" type="email" required>
+            <button class="submit-btn" onclick="submitSignup(${ev.id})">Join this moment ✨</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Filter change
+    document.getElementById("categoryFilter").addEventListener("change", (e) => {
+      const selected = e.target.value.toLowerCase();
+      const filtered = selected === "all" 
+        ? allEvents 
+        : allEvents.filter(ev => (ev.category || "Other").toLowerCase() === selected);
+      renderEvents(filtered);
+    });
 
     function getEmoji(title) {
       const t = title.toLowerCase();
       if (t.includes("sing") || t.includes("song")) return "🎤🎶";
       if (t.includes("prayer") || t.includes("meditat")) return "🙏✨";
       if (t.includes("yoga") || t.includes("move")) return "🧘‍♀️💫";
-      if (t.includes("bible") || t.includes("study")) return "📖❤️";
       return "🌟";
     }
 
     function toggleForm(id) {
       const form = document.getElementById(id);
-      form.classList.toggle("show");
-      
-      // Optional: close other open forms (better mobile UX)
-      document.querySelectorAll('.signup-form.show').forEach(f => {
-        if (f.id !== id) f.classList.remove("show");
-      });
+      const isShowing = form.classList.toggle("show");
+      if (isShowing) {
+        document.querySelectorAll('.signup-form.show').forEach(f => {
+          if (f.id !== id) f.classList.remove("show");
+        });
+      }
     }
 
     async function submitSignup(eventId) {
@@ -264,7 +382,7 @@
       const email = emailEl.value.trim();
 
       if (!name || !email) {
-        alert("Please fill in your name and email 🌸");
+        alert("Please fill name and email 🌸");
         return;
       }
 
@@ -276,17 +394,17 @@
         if (result.success) {
           alert("You're in! Thank you for joining 🙌🎉");
           nameEl.value = phoneEl.value = emailEl.value = "";
-          toggleForm(`form-${eventId}`); // close form
-          loadEvents(); // refresh counts
+          toggleForm(`form-${eventId}`);
+          loadEvents(); // refresh counts & list
         } else {
-          alert("Something went wrong: " + (result.error || "try again"));
+          alert("Sorry: " + (result.error || "try again"));
         }
       } catch (e) {
-        alert("Connection issue — please check your internet 🌐");
+        alert("Connection issue — please check internet 🌐");
       }
     }
 
-    // Initial load
+    // Load initially
     loadEvents();
   </script>
 </body>
