@@ -74,7 +74,7 @@
     .theme-toggle:hover { transform: scale(1.15); }
 
     /* ──────────────────────────────────────
-       TODAY'S WINS - MAIN FEATURE (enhanced)
+       TODAY'S WINS - MAIN FEATURE
     ────────────────────────────────────── */
     #wins-section {
       margin: 0 auto 40px;
@@ -105,6 +105,7 @@
       position: absolute;
       inset: 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
@@ -124,9 +125,16 @@
     }
 
     .win-emoji {
-      font-size: 1.8rem;
-      margin: 0 12px;
+      font-size: 2rem;
+      margin-bottom: 12px;
       opacity: 0.9;
+    }
+
+    .win-meta {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      margin-top: 12px;
+      opacity: 0.85;
     }
 
     #wins-input-container {
@@ -408,7 +416,7 @@
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
-  <!-- TODAY'S WINS - MAIN FEATURE (enhanced) -->
+  <!-- TODAY'S WINS - MAIN FEATURE -->
   <section id="wins-section">
     <h2 id="wins-title">What I accomplished today…</h2>
     
@@ -482,6 +490,31 @@
 
     const gentleEmojis = ["🌟", "🙏", "✨", "❤️", "🌸", "💫", "🌿", "☀️", "🌼", "🕊️"];
 
+    // Simple relative time formatter (e.g. "2h ago", "just now")
+    function timeAgo(timestamp) {
+      if (!timestamp) return "";
+      const now = new Date();
+      const past = new Date(timestamp);
+      const seconds = Math.floor((now - past) / 1000);
+
+      let interval = Math.floor(seconds / 31536000);
+      if (interval >= 1) return interval + "y ago";
+
+      interval = Math.floor(seconds / 2592000);
+      if (interval >= 1) return interval + "mo ago";
+
+      interval = Math.floor(seconds / 86400);
+      if (interval >= 1) return interval + "d ago";
+
+      interval = Math.floor(seconds / 3600);
+      if (interval >= 1) return interval + "h ago";
+
+      interval = Math.floor(seconds / 60);
+      if (interval >= 1) return interval + "m ago";
+
+      return "just now";
+    }
+
     async function loadWins() {
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getWins`);
@@ -507,15 +540,17 @@
 
       const win = currentWins[currentWinIndex];
       const randomEmoji = gentleEmojis[Math.floor(Math.random() * gentleEmojis.length)];
+      const timeText = win.time ? timeAgo(win.time) : "";
 
       const div = document.createElement('div');
       div.className = 'win-message';
       div.innerHTML = `
         <span class="win-emoji">${randomEmoji}</span>
         ${win.message}
-        <span style="opacity:0.8; font-size:0.95rem; margin-left:12px;">
+        <div class="win-meta">
           — ${win.name}, ${win.location || "somewhere"}
-        </span>
+          ${timeText ? ` • ${timeText}` : ""}
+        </div>
       `;
       winsFeed.innerHTML = '';
       winsFeed.appendChild(div);
@@ -523,7 +558,7 @@
       setTimeout(() => div.classList.add('show'), 100);
 
       currentWinIndex = (currentWinIndex + 1) % currentWins.length;
-      setTimeout(showNextWin, 9000); // slightly longer for more reflective reading
+      setTimeout(showNextWin, 9000); // 9 seconds for reflective reading
     }
 
     async function addNewWin() {
@@ -588,7 +623,7 @@
     setInterval(loadWins, 60000);
 
     // ──────────────────────────────────────
-    // YOUR ORIGINAL EVENTS & SIGNUP CODE (unchanged)
+    // ORIGINAL EVENTS & SIGNUP CODE (unchanged)
     // ──────────────────────────────────────
 
     let allEvents = [];
