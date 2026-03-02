@@ -157,6 +157,11 @@
       transform: scale(1.03);
     }
 
+    #wins-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     /* ──────────────────────────────────────
        REST OF YOUR STYLES (unchanged)
     ────────────────────────────────────── */
@@ -259,7 +264,6 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* Modal styles (unchanged) */
     #signup-modal {
       position: fixed;
       inset: 0;
@@ -401,7 +405,7 @@
 
   <div id="events-list" style="display:none;"></div>
 
-  <!-- Global Signup Modal (unchanged) -->
+  <!-- Global Signup Modal -->
   <div id="signup-modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -433,62 +437,80 @@
     });
 
     // ──────────────────────────────────────
-    // TODAY'S WINS FEATURE
+    // TODAY'S WINS - REAL BACKEND INTEGRATION
     // ──────────────────────────────────────
     const winsFeed = document.getElementById('wins-feed');
     const winsInput = document.getElementById('wins-input');
     const winsSubmit = document.getElementById('wins-submit');
 
     let currentWins = [];
-    let currentIndex = 0;
+    let currentWinIndex = 0;
 
-    // Simulated global accomplishments (in real app you'd fetch from backend)
-    // For demo: random rotating inspirational messages
-    const sampleAccomplishments = [
-      "I finally finished that book I've been reading for months 📖",
-      "Ran 5km this morning — felt unstoppable 🏃‍♂️",
-      "Told my family I love them today ❤️",
-      "Helped a stranger with directions and saw them smile 😊",
-      "Prayed for peace in the world 🙏",
-      "Cooked a healthy meal for myself 🍲",
-      "Wrote in my gratitude journal ✨",
-      "Took a walk and noticed the beauty of nature 🌳",
-      "Finished a difficult task I've been avoiding ✅",
-      "Made someone laugh today 😂"
-    ];
+    async function loadWins() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getWins`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        currentWins = data.wins || [];
+
+        if (currentWins.length > 0 && currentWinIndex >= currentWins.length) {
+          currentWinIndex = 0;
+        }
+
+        showNextWin();
+      } catch (err) {
+        console.error("Failed to load wins:", err);
+      }
+    }
 
     function showNextWin() {
-      if (currentWins.length === 0) return;
+      if (currentWins.length === 0) {
+        winsFeed.innerHTML = '<div class="win-message show">Be the first to share today’s win! 🌟</div>';
+        return;
+      }
 
-      const msg = currentWins[currentIndex];
+      const win = currentWins[currentWinIndex];
       const div = document.createElement('div');
       div.className = 'win-message';
-      div.textContent = msg;
+      div.textContent = win.message + (win.name && win.name !== "Anonymous" ? ` — ${win.name}` : '');
       winsFeed.innerHTML = '';
       winsFeed.appendChild(div);
 
       setTimeout(() => div.classList.add('show'), 100);
 
-      currentIndex = (currentIndex + 1) % currentWins.length;
-      setTimeout(showNextWin, 8000); // change every 8 seconds
+      currentWinIndex = (currentWinIndex + 1) % currentWins.length;
+      setTimeout(showNextWin, 8000); // next message after 8 seconds
     }
 
-    function addNewWin() {
+    async function addNewWin() {
       const text = winsInput.value.trim();
-      if (!text || text.length < 5) {
+      if (!text || text.length < 5 || text.length > 120) {
         alert("Share something short and sweet 🌟");
         return;
       }
 
-      // In real app: send to backend → then add to feed
-      currentWins.unshift(text); // add to front
-      if (currentWins.length > 50) currentWins.pop(); // keep max 50
+      winsSubmit.disabled = true;
+      winsSubmit.textContent = "Sending...";
 
-      winsInput.value = "";
-      alert("Your accomplishment is now inspiring the world! 🙌");
+      try {
+        const res = await fetch(
+          `${SCRIPT_URL}?action=postWin&message=${encodeURIComponent(text)}`
+        );
+        const result = await res.json();
 
-      // Restart feed if it was empty
-      if (currentIndex === 0) showNextWin();
+        if (result.success) {
+          winsInput.value = "";
+          alert("Your accomplishment is now inspiring the world! 🙌");
+          loadWins(); // refresh feed
+        } else {
+          alert("Could not post — " + (result.error || "please try again"));
+        }
+      } catch (err) {
+        alert("Connection error — try again");
+      } finally {
+        winsSubmit.disabled = false;
+        winsSubmit.textContent = "Share & Inspire";
+      }
     }
 
     winsSubmit.addEventListener('click', addNewWin);
@@ -499,12 +521,12 @@
       }
     });
 
-    // Start with some sample wins
-    currentWins = [...sampleAccomplishments];
-    showNextWin();
+    // Load wins immediately and refresh every 60 seconds
+    loadWins();
+    setInterval(loadWins, 60000);
 
     // ──────────────────────────────────────
-    // YOUR ORIGINAL EVENTS CODE BELOW (unchanged)
+    // YOUR ORIGINAL EVENTS & SIGNUP CODE (unchanged)
     // ──────────────────────────────────────
 
     let allEvents = [];
