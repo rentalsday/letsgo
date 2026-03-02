@@ -51,7 +51,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     h1 {
@@ -73,6 +73,93 @@
 
     .theme-toggle:hover { transform: scale(1.15); }
 
+    /* ──────────────────────────────────────
+       TODAY'S WINS - MAIN FEATURE
+    ────────────────────────────────────── */
+    #wins-section {
+      margin: 0 auto 32px;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    #wins-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    #wins-feed {
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border-radius: var(--radius);
+      background: rgba(76,175,80,0.08);
+      border: 1px solid var(--border);
+    }
+
+    .win-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-size: 1.25rem;
+      font-weight: 500;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1.2s ease;
+      color: var(--text);
+    }
+
+    .win-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #wins-input-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    #wins-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1.1rem;
+      background: var(--card);
+      color: var(--text);
+      resize: none;
+      min-height: 80px;
+    }
+
+    #wins-submit {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    #wins-submit:hover {
+      background: var(--accent-dark);
+      transform: scale(1.03);
+    }
+
+    /* ──────────────────────────────────────
+       REST OF YOUR STYLES (unchanged)
+    ────────────────────────────────────── */
     .filter-container {
       margin: 0 auto 24px;
       max-width: 720px;
@@ -172,9 +259,7 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* ──────────────────────────────────────
-       MODAL STYLES
-    ────────────────────────────────────── */
+    /* Modal styles (unchanged) */
     #signup-modal {
       position: fixed;
       inset: 0;
@@ -291,6 +376,18 @@
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
+  <!-- TODAY'S WINS - MAIN FEATURE -->
+  <section id="wins-section">
+    <h2 id="wins-title">What I accomplished today…</h2>
+    
+    <div id="wins-feed"></div>
+
+    <div id="wins-input-container">
+      <textarea id="wins-input" placeholder="Share one thing you accomplished today… (short & sweet)" maxlength="120"></textarea>
+      <button id="wins-submit">Share & Inspire</button>
+    </div>
+  </section>
+
   <div class="filter-container">
     <select id="categoryFilter">
       <option value="all">All Moments</option>
@@ -304,7 +401,7 @@
 
   <div id="events-list" style="display:none;"></div>
 
-  <!-- Global Signup Modal (no title) -->
+  <!-- Global Signup Modal (unchanged) -->
   <div id="signup-modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal()">×</button>
@@ -320,7 +417,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWOQ79xr1zNvPNGKJHSDKQlcumew0tfW0ZYX_JUAzEJvi-dO79Gmb5mHmD64pEtqS3/exec";
 
-    // Theme (dark default)
+    // Theme toggle (dark default)
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
@@ -334,6 +431,81 @@
       localStorage.setItem('theme', newTheme);
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
+
+    // ──────────────────────────────────────
+    // TODAY'S WINS FEATURE
+    // ──────────────────────────────────────
+    const winsFeed = document.getElementById('wins-feed');
+    const winsInput = document.getElementById('wins-input');
+    const winsSubmit = document.getElementById('wins-submit');
+
+    let currentWins = [];
+    let currentIndex = 0;
+
+    // Simulated global accomplishments (in real app you'd fetch from backend)
+    // For demo: random rotating inspirational messages
+    const sampleAccomplishments = [
+      "I finally finished that book I've been reading for months 📖",
+      "Ran 5km this morning — felt unstoppable 🏃‍♂️",
+      "Told my family I love them today ❤️",
+      "Helped a stranger with directions and saw them smile 😊",
+      "Prayed for peace in the world 🙏",
+      "Cooked a healthy meal for myself 🍲",
+      "Wrote in my gratitude journal ✨",
+      "Took a walk and noticed the beauty of nature 🌳",
+      "Finished a difficult task I've been avoiding ✅",
+      "Made someone laugh today 😂"
+    ];
+
+    function showNextWin() {
+      if (currentWins.length === 0) return;
+
+      const msg = currentWins[currentIndex];
+      const div = document.createElement('div');
+      div.className = 'win-message';
+      div.textContent = msg;
+      winsFeed.innerHTML = '';
+      winsFeed.appendChild(div);
+
+      setTimeout(() => div.classList.add('show'), 100);
+
+      currentIndex = (currentIndex + 1) % currentWins.length;
+      setTimeout(showNextWin, 8000); // change every 8 seconds
+    }
+
+    function addNewWin() {
+      const text = winsInput.value.trim();
+      if (!text || text.length < 5) {
+        alert("Share something short and sweet 🌟");
+        return;
+      }
+
+      // In real app: send to backend → then add to feed
+      currentWins.unshift(text); // add to front
+      if (currentWins.length > 50) currentWins.pop(); // keep max 50
+
+      winsInput.value = "";
+      alert("Your accomplishment is now inspiring the world! 🙌");
+
+      // Restart feed if it was empty
+      if (currentIndex === 0) showNextWin();
+    }
+
+    winsSubmit.addEventListener('click', addNewWin);
+    winsInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addNewWin();
+      }
+    });
+
+    // Start with some sample wins
+    currentWins = [...sampleAccomplishments];
+    showNextWin();
+
+    // ──────────────────────────────────────
+    // YOUR ORIGINAL EVENTS CODE BELOW (unchanged)
+    // ──────────────────────────────────────
 
     let allEvents = [];
     let currentEventId = null;
@@ -386,7 +558,7 @@
               ${ev.max ? `(max ${ev.max})` : ""} 🔥
             </div>
             <div class="desc">${ev.desc || ""}</div>
-            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">I'm in! 🎉</button>
+            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">Count me in! 🎉</button>
           </div>
         `;
         container.appendChild(div);
@@ -423,7 +595,6 @@
         return;
       }
 
-      // Show spinner on button
       submitBtn.classList.add("loading");
       submitBtn.disabled = true;
       submitBtn.innerHTML = "";
