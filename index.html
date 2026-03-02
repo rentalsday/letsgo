@@ -74,7 +74,7 @@
     .theme-toggle:hover { transform: scale(1.15); }
 
     /* ──────────────────────────────────────
-       TODAY'S WINS - MAIN FEATURE
+       TODAY'S WINS - MAIN FEATURE (enhanced)
     ────────────────────────────────────── */
     #wins-section {
       margin: 0 auto 40px;
@@ -105,7 +105,6 @@
       position: absolute;
       inset: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
@@ -125,16 +124,9 @@
     }
 
     .win-emoji {
-      font-size: 2rem;
-      margin-bottom: 12px;
+      font-size: 1.8rem;
+      margin: 0 12px;
       opacity: 0.9;
-    }
-
-    .win-meta {
-      font-size: 0.95rem;
-      color: var(--text-light);
-      margin-top: 12px;
-      opacity: 0.85;
     }
 
     #wins-input-container {
@@ -416,7 +408,7 @@
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
-  <!-- TODAY'S WINS - MAIN FEATURE -->
+  <!-- TODAY'S WINS - MAIN FEATURE (enhanced) -->
   <section id="wins-section">
     <h2 id="wins-title">What I accomplished today…</h2>
     
@@ -459,7 +451,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWOQ79xr1zNvPNGKJHSDKQlcumew0tfW0ZYX_JUAzEJvi-dO79Gmb5mHmD64pEtqS3/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
 
     // Theme toggle (dark default)
     const themeBtn = document.getElementById('themeBtn');
@@ -490,31 +482,6 @@
 
     const gentleEmojis = ["🌟", "🙏", "✨", "❤️", "🌸", "💫", "🌿", "☀️", "🌼", "🕊️"];
 
-    // Simple relative time formatter
-    function timeAgo(timestamp) {
-      if (!timestamp) return "";
-      const now = new Date();
-      const past = new Date(timestamp);
-      const seconds = Math.floor((now - past) / 1000);
-      
-      let interval = Math.floor(seconds / 31536000);
-      if (interval >= 1) return interval + "y ago";
-      
-      interval = Math.floor(seconds / 2592000);
-      if (interval >= 1) return interval + "mo ago";
-      
-      interval = Math.floor(seconds / 86400);
-      if (interval >= 1) return interval + "d ago";
-      
-      interval = Math.floor(seconds / 3600);
-      if (interval >= 1) return interval + "h ago";
-      
-      interval = Math.floor(seconds / 60);
-      if (interval >= 1) return interval + "m ago";
-      
-      return "just now";
-    }
-
     async function loadWins() {
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getWins`);
@@ -540,17 +507,15 @@
 
       const win = currentWins[currentWinIndex];
       const randomEmoji = gentleEmojis[Math.floor(Math.random() * gentleEmojis.length)];
-      const timeText = win.time ? timeAgo(win.time) : "";
 
       const div = document.createElement('div');
       div.className = 'win-message';
       div.innerHTML = `
         <span class="win-emoji">${randomEmoji}</span>
         ${win.message}
-        <div class="win-meta">
+        <span style="opacity:0.8; font-size:0.95rem; margin-left:12px;">
           — ${win.name}, ${win.location || "somewhere"}
-          ${timeText ? ` • ${timeText}` : ""}
-        </div>
+        </span>
       `;
       winsFeed.innerHTML = '';
       winsFeed.appendChild(div);
@@ -558,7 +523,7 @@
       setTimeout(() => div.classList.add('show'), 100);
 
       currentWinIndex = (currentWinIndex + 1) % currentWins.length;
-      setTimeout(showNextWin, 9000); // 9 seconds for reflective reading
+      setTimeout(showNextWin, 9000); // slightly longer for more reflective reading
     }
 
     async function addNewWin() {
@@ -573,7 +538,7 @@
       }
 
       if (!location) {
-        alert("Please enter your location (city, state, country, etc.) 🌍");
+        alert("Please enter your city, state, or country 🌍");
         winsLocation.focus();
         return;
       }
@@ -623,7 +588,7 @@
     setInterval(loadWins, 60000);
 
     // ──────────────────────────────────────
-    // ORIGINAL EVENTS & SIGNUP CODE (unchanged)
+    // YOUR ORIGINAL EVENTS & SIGNUP CODE (unchanged)
     // ──────────────────────────────────────
 
     let allEvents = [];
