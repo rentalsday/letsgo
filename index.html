@@ -74,7 +74,7 @@
     .theme-toggle:hover { transform: scale(1.15); }
 
     /* ──────────────────────────────────────
-       TODAY'S WINS - MAIN FEATURE
+       TODAY'S WINS SECTION
     ────────────────────────────────────── */
     #wins-section {
       margin: 0 auto 40px;
@@ -137,23 +137,81 @@
       opacity: 0.85;
     }
 
-    #wins-input-container {
+    #wins-share-btn {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      margin: 0 auto;
+      display: block;
+    }
+
+    #wins-share-btn:hover {
+      background: var(--accent-dark);
+      transform: scale(1.05);
+    }
+
+    /* ──────────────────────────────────────
+       SHARE WINS MODAL
+    ────────────────────────────────────── */
+    #wins-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #wins-modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .wins-modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 480px;
+      padding: 28px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    #wins-modal.show .wins-modal-content {
+      transform: scale(1);
+    }
+
+    .wins-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 2rem;
+      color: var(--text-light);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .wins-modal-form {
       display: flex;
       flex-direction: column;
       gap: 16px;
-      max-width: 520px;
-      margin: 0 auto;
     }
 
-    .input-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    #wins-name, #wins-location {
-      flex: 1;
-      min-width: 140px;
+    .wins-modal-form input,
+    .wins-modal-form textarea {
+      width: 100%;
       padding: 14px 16px;
       border: 1.5px solid var(--border);
       border-radius: 12px;
@@ -162,20 +220,19 @@
       color: var(--text);
     }
 
-    #wins-input {
-      width: 100%;
-      padding: 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 1.15rem;
-      background: var(--card);
-      color: var(--text);
-      resize: none;
+    .wins-modal-form textarea {
       min-height: 100px;
-      line-height: 1.5;
+      resize: vertical;
     }
 
-    #wins-submit {
+    .wins-modal-form input:focus,
+    .wins-modal-form textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.2);
+    }
+
+    .wins-modal-submit {
       background: var(--accent);
       color: white;
       font-weight: 700;
@@ -185,17 +242,30 @@
       cursor: pointer;
       font-size: 1.15rem;
       transition: all 0.3s ease;
-      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    #wins-submit:hover {
+    .wins-modal-submit:hover {
       background: var(--accent-dark);
       transform: scale(1.03);
     }
 
-    #wins-submit:disabled {
+    .wins-modal-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    .wins-modal-submit.loading::after {
+      content: "";
+      width: 24px;
+      height: 24px;
+      border: 4px solid white;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
     /* ──────────────────────────────────────
@@ -416,21 +486,32 @@
     <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
   </header>
 
-  <!-- TODAY'S WINS - MAIN FEATURE -->
+  <!-- TODAY'S WINS SECTION -->
   <section id="wins-section">
     <h2 id="wins-title">What I accomplished today…</h2>
     
     <div id="wins-feed"></div>
 
-    <div id="wins-input-container">
-      <div class="input-row">
-        <input id="wins-name" placeholder="Your first name *" required>
-        <input id="wins-location" placeholder="Your city / state / country *" required>
-      </div>
-      <textarea id="wins-input" placeholder="One thing I accomplished today… (short & sweet)" maxlength="120"></textarea>
-      <button id="wins-submit">Share & Inspire 🌟</button>
-    </div>
+    <button id="wins-share-btn">Share your win 🌟</button>
   </section>
+
+  <!-- SHARE WIN MODAL -->
+  <div id="wins-modal">
+    <div class="wins-modal-content">
+      <button class="wins-modal-close" onclick="closeWinsModal()">×</button>
+      
+      <h3 style="font-size:1.4rem; color:var(--accent); margin-bottom:20px; text-align:center;">
+        Share What You Accomplished Today
+      </h3>
+
+      <form class="wins-modal-form">
+        <input id="wins-modal-name" placeholder="Your first name *" required>
+        <input id="wins-modal-location" placeholder="City / state / country *" required>
+        <textarea id="wins-modal-input" placeholder="One thing I accomplished today… (short & sweet)" maxlength="120" required></textarea>
+        <button type="button" class="wins-modal-submit" id="wins-modal-submit-btn" onclick="submitWinsForm()">Blast off! 🚀</button>
+      </form>
+    </div>
+  </div>
 
   <div class="filter-container">
     <select id="categoryFilter">
@@ -480,17 +561,19 @@
     // TODAY'S WINS - REAL BACKEND INTEGRATION
     // ──────────────────────────────────────
     const winsFeed = document.getElementById('wins-feed');
-    const winsName = document.getElementById('wins-name');
-    const winsLocation = document.getElementById('wins-location');
-    const winsInput = document.getElementById('wins-input');
-    const winsSubmit = document.getElementById('wins-submit');
+    const winsShareBtn = document.getElementById('wins-share-btn');
+    const winsModal = document.getElementById('wins-modal');
+    const winsModalName = document.getElementById('wins-modal-name');
+    const winsModalLocation = document.getElementById('wins-modal-location');
+    const winsModalInput = document.getElementById('wins-modal-input');
+    const winsModalSubmit = document.getElementById('wins-modal-submit-btn');
 
     let currentWins = [];
     let currentWinIndex = 0;
 
     const gentleEmojis = ["🌟", "🙏", "✨", "❤️", "🌸", "💫", "🌿", "☀️", "🌼", "🕊️"];
 
-    // Simple relative time formatter (e.g. "2h ago", "just now")
+    // Simple relative time formatter
     function timeAgo(timestamp) {
       if (!timestamp) return "";
       const now = new Date();
@@ -558,34 +641,51 @@
       setTimeout(() => div.classList.add('show'), 100);
 
       currentWinIndex = (currentWinIndex + 1) % currentWins.length;
-      setTimeout(showNextWin, 9000); // 9 seconds for reflective reading
+      setTimeout(showNextWin, 9000);
     }
 
-    async function addNewWin() {
-      const name = winsName.value.trim();
-      const location = winsLocation.value.trim();
-      const text = winsInput.value.trim();
+    function openWinsModal() {
+      winsModalName.value = "";
+      winsModalLocation.value = "";
+      winsModalInput.value = "";
+      winsModal.classList.add("show");
+    }
+
+    function closeWinsModal() {
+      winsModal.classList.remove("show");
+    }
+
+    winsModal.addEventListener("click", (e) => {
+      if (e.target === winsModal) closeWinsModal();
+    });
+
+    async function submitWinsForm() {
+      const name = winsModalName.value.trim();
+      const location = winsModalLocation.value.trim();
+      const text = winsModalInput.value.trim();
+      const submitBtn = winsModalSubmit;
 
       if (!name) {
         alert("Please enter your first name 🌸");
-        winsName.focus();
+        winsModalName.focus();
         return;
       }
 
       if (!location) {
         alert("Please enter your city, state, or country 🌍");
-        winsLocation.focus();
+        winsModalLocation.focus();
         return;
       }
 
       if (!text || text.length < 5 || text.length > 120) {
         alert("Share something short and sweet 🌟");
-        winsInput.focus();
+        winsModalInput.focus();
         return;
       }
 
-      winsSubmit.disabled = true;
-      winsSubmit.textContent = "Sending...";
+      submitBtn.classList.add("loading");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "";
 
       try {
         const res = await fetch(
@@ -594,29 +694,23 @@
         const result = await res.json();
 
         if (result.success) {
-          winsName.value = "";
-          winsLocation.value = "";
-          winsInput.value = "";
           alert("Your win is now shining in the world! Thank you for inspiring others 🙏✨");
-          loadWins(); // refresh feed
+          closeWinsModal();
+          loadWins();
         } else {
           alert("Could not post — " + (result.error || "please try again"));
         }
       } catch (err) {
         alert("Connection error — try again");
       } finally {
-        winsSubmit.disabled = false;
-        winsSubmit.textContent = "Share & Inspire 🌟";
+        submitBtn.classList.remove("loading");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Blast off! 🚀";
       }
     }
 
-    winsSubmit.addEventListener('click', addNewWin);
-    winsInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        addNewWin();
-      }
-    });
+    // Open share modal when clicking the button
+    document.getElementById('wins-share-btn').addEventListener('click', openWinsModal);
 
     // Load wins immediately and refresh every 60 seconds
     loadWins();
