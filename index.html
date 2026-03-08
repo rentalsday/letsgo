@@ -77,11 +77,11 @@
       background: var(--primary);
       color: white;
       border: none;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1rem;
       transition: var(--transition);
     }
 
@@ -89,11 +89,6 @@
       background: var(--primary-dark);
       transform: scale(1.05);
     }
-
-    /* ──────────────────────────────────────
-       TODAY'S WINS SECTION (kept but commented if unused)
-    ────────────────────────────────────── */
-    /* ... wins-section styles unchanged ... */
 
     /* ──────────────────────────────────────
        CREATE EVENT MODAL
@@ -123,6 +118,12 @@
       padding: 28px;
       position: relative;
       box-shadow: var(--shadow-md);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    #create-modal.show .create-modal-content {
+      transform: scale(1);
     }
 
     .create-modal-close {
@@ -189,15 +190,401 @@
       cursor: not-allowed;
     }
 
-    /* Rest of your original styles remain unchanged */
-    /* ... filter-container, loading, events-list, signup-modal, etc. ... */
+    /* ──────────────────────────────────────
+       ORIGINAL STYLES (TODAY'S WINS + EVENTS + SIGNUP)
+    ────────────────────────────────────── */
+    #wins-section {
+      margin: 0 auto 40px;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    #wins-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    #wins-feed {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+      border-radius: var(--radius);
+      background: linear-gradient(to bottom, rgba(76,175,80,0.05), rgba(76,175,80,0.02));
+      border: 1px solid var(--border);
+      box-shadow: inset 0 2px 10px rgba(76,175,80,0.1);
+    }
+
+    .win-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-size: 1.35rem;
+      font-weight: 500;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.4s ease;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .win-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .win-emoji {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    .win-meta {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      margin-top: 12px;
+      opacity: 0.85;
+    }
+
+    #wins-share-btn {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      margin: 0 auto;
+      display: block;
+    }
+
+    #wins-share-btn:hover {
+      background: var(--accent-dark);
+      transform: scale(1.05);
+    }
+
+    #wins-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #wins-modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .wins-modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 480px;
+      padding: 28px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    #wins-modal.show .wins-modal-content {
+      transform: scale(1);
+    }
+
+    .wins-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 2rem;
+      color: var(--text-light);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .wins-modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .wins-modal-form input,
+    .wins-modal-form textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1.05rem;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .wins-modal-form textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .wins-modal-form input:focus,
+    .wins-modal-form textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.2);
+    }
+
+    .wins-modal-submit {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.15rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .wins-modal-submit:hover {
+      background: var(--accent-dark);
+      transform: scale(1.03);
+    }
+
+    .wins-modal-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .filter-container {
+      margin: 0 auto 24px;
+      max-width: 720px;
+      text-align: center;
+    }
+
+    select {
+      padding: 12px 16px;
+      font-size: 1.05rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      width: 100%;
+      max-width: 320px;
+      cursor: pointer;
+    }
+
+    #loading {
+      text-align: center;
+      font-size: 1.3rem;
+      color: var(--text-light);
+      padding: 80px 0;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 5px solid var(--border);
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #events-list {
+      display: grid;
+      gap: 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .event {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s forwards;
+    }
+
+    .event:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+
+    .event-header {
+      padding: 20px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .meta {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+
+    .desc {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 18px 12px;
+      font-size: clamp(1.4rem, 5vw, 1.9rem);
+      font-weight: 900;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .action-btn:hover {
+      transform: scale(1.06) translateY(-3px);
+      box-shadow: 0 10px 25px rgba(76,175,80,0.5);
+    }
+
+    #signup-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #signup-modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 420px;
+      padding: 24px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    #signup-modal.show .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 1.8rem;
+      color: var(--text-light);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .modal-form input {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 12px 0;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    .modal-form input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
+    }
+
+    .modal-submit {
+      background: var(--primary-dark);
+      color: white;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 6vw, 2.2rem);
+      padding: 20px 12px;
+      border: none;
+      border-radius: var(--radius);
+      width: 100%;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .modal-submit:hover {
+      transform: scale(1.08) translateY(-4px);
+      box-shadow: 0 12px 30px rgba(194,24,91,0.6);
+    }
+
+    .modal-submit.loading {
+      background: #ad1457;
+      cursor: not-allowed;
+    }
+
+    .modal-submit.loading::after {
+      content: "";
+      width: 28px;
+      height: 28px;
+      border: 4px solid white;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    @media (min-width: 640px) {
+      body { padding: 32px 24px; }
+      #events-list { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
+    }
   </style>
 </head>
 <body data-theme="dark">
 
   <header>
     <h1>Moments</h1>
-    <div>
+    <div style="display:flex; gap:16px; align-items:center;">
       <button class="create-btn" id="createEventBtn" style="display:none;">+ Create Moment</button>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
     </div>
@@ -216,19 +603,19 @@
 
   <div id="events-list" style="display:none;"></div>
 
-  <!-- Global Signup Modal (unchanged) -->
+  <!-- Signup Modal -->
   <div id="signup-modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeModal()">×</button>
       <form class="modal-form">
-        <input id="modal-name"  placeholder="Your name *"     required>
-        <input id="modal-email" placeholder="Email *"         type="email" required>
+        <input id="modal-name" placeholder="Your name *" required>
+        <input id="modal-email" placeholder="Email *" type="email" required>
         <button type="button" class="modal-submit" id="modal-submit-btn" onclick="submitModalForm()">Blast off! 🚀</button>
       </form>
     </div>
   </div>
 
-  <!-- New Create Event Modal -->
+  <!-- Create Event Modal -->
   <div id="create-modal">
     <div class="create-modal-content">
       <button class="create-modal-close" onclick="closeCreateModal()">×</button>
@@ -237,8 +624,8 @@
       <form class="create-form" id="create-form">
         <input id="event-title"    placeholder="Event title *" required>
         <textarea id="event-desc"  placeholder="Description (optional)"></textarea>
-        <input id="event-host"     placeholder="Your name / host name *" required>
-        <input id="event-max"      type="number" placeholder="Max spots (optional)">
+        <input id="event-host"     placeholder="Your / host name *" required>
+        <input id="event-max"      type="number" placeholder="Max spots (optional)" min="1">
         <select id="event-category">
           <option value="Gathering">Gathering</option>
           <option value="Workshop">Workshop</option>
@@ -254,7 +641,7 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
-    const ACCESS_CODE = "berkeley2026";   // ← CHANGE THIS to your secret code
+    const ACCESS_CODE = "berkeley2026";  // ← change this to your preferred secret phrase
 
     // Theme toggle
     const themeBtn = document.getElementById('themeBtn');
@@ -271,27 +658,25 @@
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
 
-    // Check if user is authorized to create events
-    const isAuthorized = localStorage.getItem("momentsCreator") === "true";
-    if (isAuthorized) {
+    // Show create button only if already authorized
+    if (localStorage.getItem("momentsCreator") === "true") {
       document.getElementById("createEventBtn").style.display = "inline-block";
-    } else {
-      // Optional: prompt once when they try to create
-      document.getElementById("createEventBtn").onclick = () => {
-        if (!isAuthorized) {
-          const code = prompt("Enter access code to create events:");
-          if (code === ACCESS_CODE) {
-            localStorage.setItem("momentsCreator", "true");
-            document.getElementById("createEventBtn").style.display = "inline-block";
-            openCreateModal();
-          } else if (code) {
-            alert("Incorrect code.");
-          }
-        } else {
-          openCreateModal();
-        }
-      };
     }
+
+    document.getElementById("createEventBtn").onclick = () => {
+      if (localStorage.getItem("momentsCreator") !== "true") {
+        const code = prompt("Enter access code to create events:");
+        if (code === ACCESS_CODE) {
+          localStorage.setItem("momentsCreator", "true");
+          document.getElementById("createEventBtn").style.display = "inline-block";
+          openCreateModal();
+        } else if (code !== null) {
+          alert("Wrong code.");
+        }
+      } else {
+        openCreateModal();
+      }
+    };
 
     let allEvents = [];
     let currentEventId = null;
@@ -351,7 +736,6 @@
       });
     }
 
-    // ─── Signup logic (unchanged) ───
     function openSignupModal(eventId, eventTitle) {
       currentEventId = eventId;
       document.getElementById("modal-name").value = "";
@@ -368,11 +752,45 @@
       if (e.target === document.getElementById("signup-modal")) closeModal();
     });
 
-    async function submitModalForm() { /* unchanged */ 
-      // ... your existing signup code ...
+    async function submitModalForm() {
+      if (!currentEventId) return;
+
+      const name  = document.getElementById("modal-name").value.trim();
+      const email = document.getElementById("modal-email").value.trim();
+      const submitBtn = document.getElementById("modal-submit-btn");
+
+      if (!name || !email) {
+        alert("Please fill in your name and email 🌸");
+        return;
+      }
+
+      submitBtn.classList.add("loading");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "";
+
+      const url = `${SCRIPT_URL}?action=signup&eventId=${currentEventId}&name=${encodeURIComponent(name)}&phone=&email=${encodeURIComponent(email)}`;
+
+      try {
+        const res = await fetch(url);
+        const result = await res.json();
+
+        if (result.success) {
+          alert("You're in! 🙌✨");
+          closeModal();
+          loadEvents();
+        } else {
+          alert("Sorry — something went wrong. Try again.");
+        }
+      } catch (err) {
+        alert("Connection issue — check your internet 🌐");
+      } finally {
+        submitBtn.classList.remove("loading");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Blast off! 🚀";
+      }
     }
 
-    // ─── Create Event Modal logic ───
+    // Create modal handlers
     function openCreateModal() {
       document.getElementById("create-modal").classList.add("show");
       document.getElementById("create-form").reset();
@@ -404,15 +822,15 @@
 
       const params = new URLSearchParams({
         action:   "createEvent",
-        title,
-        host,
-        desc,
-        max,
-        category
+        title:    title,
+        desc:     desc,
+        host:     host,
+        max:      max || "",
+        category: category
       });
 
       try {
-        const res = await fetch(`${SCRIPT_URL}?${params}`);
+        const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
         const result = await res.json();
 
         if (result.success) {
@@ -420,7 +838,7 @@
           closeCreateModal();
           loadEvents();
         } else {
-          alert("Failed to create: " + (result.message || "unknown error"));
+          alert("Failed: " + (result.message || "unknown error"));
         }
       } catch (err) {
         alert("Network error – try again");
