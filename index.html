@@ -77,24 +77,41 @@
         0 0 60px rgba(204, 51, 255, 0.7);
     }
 
+    /* Theme toggle button */
     .theme-toggle {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      font-size: 1.9rem;
       cursor: pointer;
-      padding: 12px;
+      padding: 10px;
       border-radius: 50%;
-      transition: var(--transition);
-      position: absolute;
-      top: 24px;
-      right: 24px;
+      transition: all 0.3s ease;
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      color: var(--text);
     }
 
-    .theme-toggle:hover { transform: scale(1.2) rotate(15deg); }
+    .theme-toggle:hover {
+      transform: scale(1.15) rotate(20deg);
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
 
-    header {
-      position: relative;
-      margin-bottom: 16px;
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .theme-toggle {
+        top: 12px;
+        right: 12px;
+        font-size: 1.7rem;
+        padding: 8px;
+      }
+      h1 { 
+        font-size: clamp(3.4rem, 14vw, 5.8rem); 
+        letter-spacing: -1px;
+      }
     }
 
     /* ──────────────────────────────────────
@@ -179,8 +196,6 @@
       background: var(--accent-dark);
       transform: scale(1.05);
     }
-
-    /* Rest of your styles remain unchanged ──► */
 
     .filter-container {
       margin: 0 auto 24px;
@@ -389,20 +404,12 @@
       #events-list { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
       .app-title-container { margin: 0 auto 64px; }
     }
-
-    @media (max-width: 480px) {
-      h1 { 
-        font-size: clamp(3.4rem, 14vw, 5.8rem); 
-        letter-spacing: -1px;
-      }
-    }
   </style>
 </head>
 <body data-theme="dark">
 
-  <header>
-    <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
-  </header>
+  <!-- Floating theme toggle -->
+  <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
 
   <div class="app-title-container">
     <h1>Moment</h1>
@@ -427,8 +434,8 @@
       <button class="modal-close" onclick="closeModal()">×</button>
       
       <form class="modal-form">
-        <input id="modal-name"  placeholder="Your name *"     required>
-        <input id="modal-email" placeholder="Email *"         type="email" required>
+        <input id="modal-name" placeholder="Your name *" required>
+        <input id="modal-email" placeholder="Email *" type="email" required>
         <button type="button" class="modal-submit" id="modal-submit-btn" onclick="submitModalForm()">Blast off! 🚀</button>
       </form>
     </div>
@@ -437,16 +444,19 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
 
-    // Theme toggle (dark default)
+    // Theme toggle
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
     const initialTheme = savedTheme || 'dark';
+    
     html.setAttribute('data-theme', initialTheme);
     themeBtn.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
 
     themeBtn.addEventListener('click', () => {
-      const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      const current = html.getAttribute('data-theme');
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      
       html.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
