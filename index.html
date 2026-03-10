@@ -65,12 +65,12 @@
       text-shadow: 0 0 20px rgba(255,51,102,0.6), 0 0 40px rgba(204,51,255,0.4);
     }
 
-    /* Theme toggle - fixed top-right */
+    /* Theme toggle - locked top-right */
     .theme-toggle {
       position: fixed;
       top: 16px;
       right: 16px;
-      z-index: 100;
+      z-index: 1000;
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
       font-size: 1.9rem;
@@ -101,12 +101,13 @@
     .create-btn, .search-btn {
       font-weight: 700;
       font-size: 1.3rem;
-      padding: 14px 32px;
+      padding: 14px 28px;
       border: none;
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
       white-space: nowrap;
+      min-width: 140px;
     }
 
     .create-btn { background: var(--primary); color: white; }
@@ -138,18 +139,11 @@
       box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
     }
 
-    /* Events container - supports swipe on mobile */
-    #events-container {
-      position: relative;
-      overflow: hidden;
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
     #events-list {
       display: grid;
       gap: 20px;
-      transition: transform 0.4s ease;
+      max-width: 720px;
+      margin: 0 auto;
     }
 
     .event {
@@ -198,32 +192,49 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* Mobile swipe mode */
-    @media (max-width: 639px) {
-      #events-list {
-        display: flex;
-        flex-direction: row;
-        gap: 0;
-        width: 100%;
-        transform: translateX(0);
-        transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
-      }
-
-      .event {
-        flex: 0 0 100%;
-        width: 100%;
-        transform: translateY(0);
-        animation: none;
-        opacity: 1;
-        border-radius: 0;
-        box-shadow: none;
-        min-height: 60vh;
-      }
-
-      .event-header { padding: 24px; }
+    /* Create Modal */
+    #create-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
     }
+    #create-modal.show { display: flex; }
+    .modal-content {
+      background: var(--card); border-radius: var(--radius); width: 90%; max-width: 460px;
+      padding: 28px; position: relative; box-shadow: var(--shadow-md);
+    }
+    .modal-close { position: absolute; top: 12px; right: 16px; font-size: 1.8rem; cursor: pointer; background: none; border: none; }
+    .modal-form label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-light); }
+    .modal-form input, .modal-form textarea {
+      width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: var(--card); color: var(--text); resize: vertical;
+    }
+    .modal-submit {
+      background: var(--primary-dark); color: white; font-weight: 900; font-size: 1.4rem;
+      padding: 18px; border: none; border-radius: var(--radius); width: 100%; margin-top: 24px; cursor: pointer;
+    }
+    .modal-submit.loading { background: #ad1457; cursor: not-allowed; }
 
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    /* Mobile fixes: buttons side-by-side + better spacing */
+    @media (max-width: 480px) {
+      .header-buttons {
+        flex-wrap: nowrap;
+        gap: 12px;
+        padding: 0 10px;
+      }
+      .create-btn, .search-btn {
+        font-size: 1.05rem;
+        padding: 12px 20px;
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .header-buttons { flex-wrap: wrap; }
+      .create-btn, .search-btn { flex: 1 1 100%; margin: 6px 0; }
+    }
 
     @media (min-width: 640px) {
       body { padding: 32px 24px; }
@@ -252,9 +263,7 @@
     Loading beautiful moments...
   </div>
 
-  <div id="events-container">
-    <div id="events-list" style="display:none;"></div>
-  </div>
+  <div id="events-list" style="display:none;"></div>
 
   <!-- Create Event Modal -->
   <div id="create-modal">
@@ -281,7 +290,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
 
-    // Theme toggle (now reliably top-right)
+    // Theme toggle
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -295,7 +304,7 @@
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
 
-    // Create modal
+    // Create modal - fully restored
     const createBtn = document.getElementById('createEventBtn');
     const createModal = document.getElementById('create-modal');
 
@@ -312,7 +321,7 @@
       if (e.target === createModal) closeCreateModal();
     });
 
-    // Search
+    // Search toggle
     const toggleSearchBtn = document.getElementById('toggleSearchBtn');
     const searchContainer = document.getElementById('search-input-container');
     const searchInput = document.getElementById('search-input');
@@ -328,7 +337,6 @@
 
     let allEvents = [];
     let currentFilter = '';
-    let currentIndex = 0;
 
     function filterEvents() {
       currentFilter = searchInput.value.toLowerCase().trim();
@@ -339,6 +347,49 @@
             ev.desc.toLowerCase().includes(currentFilter))
         : allEvents;
       renderEvents(filtered);
+    }
+
+    async function submitNewEvent() {
+      const title    = document.getElementById('event-title').value.trim();
+      const host     = document.getElementById('event-host').value.trim();
+      const desc     = document.getElementById('event-desc').value.trim();
+      const endDate  = document.getElementById('event-end-date').value;
+      const submitBtn = document.getElementById('create-submit-btn');
+
+      if (!title || !host || !endDate) {
+        alert("Please fill Title, Host and End Date 🌱");
+        return;
+      }
+
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating...";
+
+      const params = new URLSearchParams({
+        action: 'createEvent',
+        title:   encodeURIComponent(title),
+        host:    encodeURIComponent(host),
+        desc:    encodeURIComponent(desc),
+        endDate
+      });
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?${params}`);
+        const result = await res.json();
+        if (result.success) {
+          alert("Moment created! 🎉 It will appear soon.");
+          closeCreateModal();
+          loadEvents();
+        } else {
+          alert(`Error: ${result.error || "Unknown issue"}`);
+        }
+      } catch (err) {
+        alert("Connection error – please try again");
+      } finally {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Moment ✨";
+      }
     }
 
     async function loadEvents() {
@@ -353,7 +404,7 @@
         allEvents.sort(() => Math.random() - 0.5);
         renderEvents(allEvents);
         loadingEl.style.display = "none";
-        listEl.style.display = "block";
+        listEl.style.display = "grid";
       } catch (err) {
         loadingEl.innerHTML = `<p style="color:#e74c3c; font-size:1.2rem;">Couldn't load events… please try again later 🌧️</p>`;
       }
@@ -362,7 +413,6 @@
     function renderEvents(events) {
       const container = document.getElementById("events-list");
       container.innerHTML = "";
-      currentIndex = 0;
 
       events.forEach((ev, i) => {
         const div = document.createElement("div");
@@ -388,10 +438,6 @@
         const btn = div.querySelector('.action-btn');
         btn.addEventListener('click', () => handleJoinClick(btn, ev.id));
       });
-
-      // Initialize swipe after rendering
-      initSwipe();
-      updateSwipePosition();
     }
 
     function autoLink(text) {
@@ -431,46 +477,6 @@
         btn.classList.remove('joined');
         btn.textContent = "I'm in! 🎉";
       }
-    }
-
-    // ── Swipe Gesture Support ──
-    let startX = 0;
-    let currentTranslate = 0;
-
-    function initSwipe() {
-      const container = document.getElementById('events-container');
-      if (!container) return;
-
-      container.addEventListener('touchstart', e => {
-        startX = e.touches[0].clientX;
-      }, { passive: true });
-
-      container.addEventListener('touchmove', e => {
-        if (!e.touches.length) return;
-        const currentX = e.touches[0].clientX;
-        const diff = currentX - startX;
-        currentTranslate = diff;
-        updateSwipePosition(true);
-      }, { passive: false });
-
-      container.addEventListener('touchend', () => {
-        const threshold = 100;
-        if (currentTranslate > threshold && currentIndex > 0) {
-          currentIndex--;
-        } else if (currentTranslate < -threshold && currentIndex < allEvents.length - 1) {
-          currentIndex++;
-        }
-        currentTranslate = 0;
-        updateSwipePosition();
-      });
-    }
-
-    function updateSwipePosition(isMoving = false) {
-      const list = document.getElementById('events-list');
-      if (!list) return;
-
-      const offset = -currentIndex * 100 + (isMoving ? currentTranslate / window.innerWidth * 100 : 0);
-      list.style.transform = `translateX(${offset}%)`;
     }
 
     function getEmoji(title) {
