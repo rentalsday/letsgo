@@ -67,9 +67,10 @@
     .header-buttons {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 16px;
-      flex-wrap: wrap;
       margin: 20px 0 40px;
+      flex-wrap: wrap;
     }
 
     .create-btn, .search-btn {
@@ -80,20 +81,19 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
+      white-space: nowrap;
     }
 
     .create-btn {
       background: var(--primary);
       color: white;
     }
-
     .create-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
 
     .search-btn {
       background: var(--accent);
       color: white;
     }
-
     .search-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
 
     #search-input-container {
@@ -191,36 +191,58 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* Modal styles (create event) unchanged – keeping only essentials here */
+    /* ── Create Modal (unchanged) ── */
     #create-modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       display: none; align-items: center; justify-content: center; z-index: 1000;
     }
-
-    #create-modal.show { display: flex; opacity: 1; }
-
+    #create-modal.show { display: flex; }
     .modal-content {
       background: var(--card); border-radius: var(--radius); width: 90%; max-width: 460px;
       padding: 28px; position: relative; box-shadow: var(--shadow-md);
     }
-
     .modal-close { position: absolute; top: 12px; right: 16px; font-size: 1.8rem; cursor: pointer; background: none; border: none; }
-
     .modal-form label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-light); }
-
     .modal-form input, .modal-form textarea {
       width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
       border-radius: 12px; background: var(--card); color: var(--text); resize: vertical;
     }
-
     .modal-submit {
       background: var(--primary-dark); color: white; font-weight: 900; font-size: 1.4rem;
       padding: 18px; border: none; border-radius: var(--radius); width: 100%; margin-top: 24px; cursor: pointer;
     }
-
     .modal-submit.loading { background: #ad1457; cursor: not-allowed; }
 
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    /* ── Mobile: keep buttons SIDE BY SIDE ── */
+    @media (max-width: 480px) {
+      .header-buttons {
+        flex-wrap: nowrap;           /* Force side-by-side */
+        gap: 10px;
+        padding: 0 12px;             /* Small breathing room on edges */
+      }
+
+      .create-btn, .search-btn {
+        font-size: 1.1rem;           /* Slightly smaller text */
+        padding: 12px 20px;          /* Reduced padding */
+        flex: 1 1 auto;              /* Grow equally but respect content */
+        max-width: 48%;              /* Prevent overflow */
+        min-width: 0;                /* Allow shrinking if needed */
+      }
+    }
+
+    /* Very narrow screens fallback (e.g. old iPhone SE) */
+    @media (max-width: 360px) {
+      .header-buttons {
+        flex-wrap: wrap;             /* Allow stacking only here */
+      }
+      .create-btn, .search-btn {
+        flex: 1 1 100%;
+        max-width: 100%;
+        margin: 6px 0;
+      }
+    }
 
     @media (min-width: 640px) {
       body { padding: 32px 24px; }
@@ -316,7 +338,7 @@
       const isVisible = searchContainer.style.display !== 'none';
       searchContainer.style.display = isVisible ? 'none' : 'block';
       if (!isVisible) searchInput.focus();
-      else searchInput.value = ''; filterEvents();
+      else { searchInput.value = ''; filterEvents(); }
     });
 
     searchInput.addEventListener('input', filterEvents);
@@ -387,8 +409,7 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         allEvents = data.events || [];
-        // Randomize once on load
-        allEvents.sort(() => Math.random() - 0.5);
+        allEvents.sort(() => Math.random() - 0.5); // randomize
         renderEvents(allEvents);
         loadingEl.style.display = "none";
         listEl.style.display = "grid";
