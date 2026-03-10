@@ -47,11 +47,10 @@
       transition: background 0.4s, color 0.4s;
     }
 
-    /* ──────── BIG JOYFUL TITLE ──────── */
     .app-title-container {
       text-align: center;
-      margin: 0 auto 48px;
-      padding: 16px 0 32px;
+      margin: 0 auto 32px;
+      padding: 16px 0 24px;
     }
 
     h1 {
@@ -62,20 +61,12 @@
       background: linear-gradient(90deg, #ff3366, #cc33ff, #ff66cc);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 
-        0 0 20px rgba(255, 51, 102, 0.6),
-        0 0 40px rgba(204, 51, 255, 0.4);
+      text-shadow: 0 0 20px rgba(255,51,102,0.6), 0 0 40px rgba(204,51,255,0.4);
       filter: drop-shadow(0 8px 16px rgba(255,51,102,0.35));
       transition: all 0.4s ease;
     }
 
-    h1:hover {
-      transform: scale(1.03);
-      text-shadow: 
-        0 0 30px rgba(255, 51, 102, 0.9),
-        0 0 60px rgba(204, 51, 255, 0.7);
-    }
+    h1:hover { transform: scale(1.03); text-shadow: 0 0 30px rgba(255,51,102,0.9), 0 0 60px rgba(204,51,255,0.7); }
 
     .theme-toggle {
       background: rgba(255,255,255,0.08);
@@ -99,17 +90,23 @@
       box-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
 
-    @media (max-width: 480px) {
-      .theme-toggle {
-        top: 12px;
-        right: 12px;
-        font-size: 1.7rem;
-        padding: 8px;
-      }
-      h1 { 
-        font-size: clamp(3.4rem, 14vw, 5.8rem); 
-        letter-spacing: -1px;
-      }
+    .create-btn {
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 1.3rem;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 16px auto 40px;
+      display: block;
+      transition: all 0.3s ease;
+    }
+
+    .create-btn:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
     }
 
     #events-list {
@@ -158,12 +155,9 @@
     .desc a {
       color: var(--primary);
       text-decoration: underline;
-      transition: color 0.2s;
     }
 
-    .desc a:hover {
-      color: var(--primary-dark);
-    }
+    .desc a:hover { color: var(--primary-dark); }
 
     .action-btn {
       width: 100%;
@@ -192,12 +186,106 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
+    /* ── Create Event Modal ── */
+    #create-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #create-modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 460px;
+      padding: 28px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    #create-modal.show .modal-content { transform: scale(1); }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 1.8rem;
+      color: var(--text-light);
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .modal-form label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .modal-form input,
+    .modal-form textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-form input:focus,
+    .modal-form textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
+    }
+
+    .modal-submit {
+      background: var(--primary-dark);
+      color: white;
+      font-weight: 900;
+      font-size: 1.4rem;
+      padding: 18px;
+      border: none;
+      border-radius: var(--radius);
+      width: 100%;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .modal-submit:hover {
+      transform: scale(1.04);
+      box-shadow: 0 10px 20px rgba(194,24,91,0.4);
+    }
+
+    .modal-submit.loading {
+      background: #ad1457;
+      cursor: not-allowed;
+    }
+
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
     @media (min-width: 640px) {
       body { padding: 32px 24px; }
       #events-list { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
-      .app-title-container { margin: 0 auto 64px; }
+      .app-title-container { margin: 0 auto 48px; }
     }
   </style>
 </head>
@@ -207,6 +295,7 @@
 
   <div class="app-title-container">
     <h1>Moments</h1>
+    <button class="create-btn" id="createEventBtn">Got a moment?</button>
   </div>
 
   <div id="loading">
@@ -216,6 +305,29 @@
 
   <div id="events-list" style="display:none;"></div>
 
+  <!-- Create Event Modal -->
+  <div id="create-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeCreateModal()">×</button>
+      
+      <form class="modal-form" id="create-form">
+        <label for="event-title">Title *</label>
+        <input id="event-title" required placeholder="e.g. Sunset Yoga on the Hill">
+
+        <label for="event-host">Host *</label>
+        <input id="event-host" required placeholder="Your name or group">
+
+        <label for="event-desc">Description</label>
+        <textarea id="event-desc" rows="4" placeholder="What’s happening? Any details, links, vibes..."></textarea>
+
+        <label for="event-end-date">Ends on *</label>
+        <input id="event-end-date" type="date" required>
+
+        <button type="button" class="modal-submit" id="create-submit-btn" onclick="submitNewEvent()">Create Moment ✨</button>
+      </form>
+    </div>
+  </div>
+
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
 
@@ -224,7 +336,6 @@
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
     const initialTheme = savedTheme || 'dark';
-    
     html.setAttribute('data-theme', initialTheme);
     themeBtn.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
 
@@ -235,6 +346,67 @@
       localStorage.setItem('theme', newTheme);
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
+
+    // Create modal controls
+    const createBtn = document.getElementById('createEventBtn');
+    const createModal = document.getElementById('create-modal');
+
+    createBtn.addEventListener('click', () => {
+      createModal.classList.add('show');
+      document.getElementById('create-form').reset();
+    });
+
+    function closeCreateModal() {
+      createModal.classList.remove('show');
+    }
+
+    createModal.addEventListener('click', e => {
+      if (e.target === createModal) closeCreateModal();
+    });
+
+    async function submitNewEvent() {
+      const title    = document.getElementById('event-title').value.trim();
+      const host     = document.getElementById('event-host').value.trim();
+      const desc     = document.getElementById('event-desc').value.trim();
+      const endDate  = document.getElementById('event-end-date').value;
+      const submitBtn = document.getElementById('create-submit-btn');
+
+      if (!title || !host || !endDate) {
+        alert("Please fill in Title, Host, and End Date 🌱");
+        return;
+      }
+
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating...";
+
+      const params = new URLSearchParams({
+        action: 'createEvent',
+        title:   encodeURIComponent(title),
+        host:    encodeURIComponent(host),
+        desc:    encodeURIComponent(desc),
+        endDate: endDate
+      });
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?${params}`);
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Moment created! 🎉 It will appear soon.");
+          closeCreateModal();
+          loadEvents(); // refresh list
+        } else {
+          alert("Something went wrong: " + (result.error || "Unknown issue"));
+        }
+      } catch (err) {
+        alert("Connection error — please try again");
+      } finally {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Moment ✨";
+      }
+    }
 
     let allEvents = [];
 
@@ -275,16 +447,13 @@
               ${ev.max ? `(max ${ev.max})` : ""} 🔥
             </div>
             <div class="desc">${safeDesc}</div>
-            <button class="action-btn" 
-                    data-event-id="${ev.id}"
-                    data-count-el="${ev.count}">
+            <button class="action-btn" data-event-id="${ev.id}">
               I'm in! 🎉
             </button>
           </div>
         `;
         container.appendChild(div);
 
-        // Add click handler after element is in DOM
         const btn = div.querySelector('.action-btn');
         btn.addEventListener('click', () => handleJoinClick(btn, ev.id));
       });
@@ -314,21 +483,20 @@
         const result = await res.json();
 
         if (result.success) {
-          const newCount = currentCount + 1;
-          countEl.textContent = newCount;
+          countEl.textContent = currentCount + 1;
         } else {
-          // revert on failure
-          btn.disabled = false;
-          btn.classList.remove('joined');
-          btn.textContent = "I'm in! 🎉";
+          revertButton();
           alert("Couldn't join — please try again");
         }
       } catch (err) {
-        // revert on error
+        revertButton();
+        alert("Connection issue — try again later");
+      }
+
+      function revertButton() {
         btn.disabled = false;
         btn.classList.remove('joined');
         btn.textContent = "I'm in! 🎉";
-        alert("Connection issue — try again later");
       }
     }
 
