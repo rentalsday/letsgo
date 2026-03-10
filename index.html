@@ -62,51 +62,61 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: 0 0 20px rgba(255,51,102,0.6), 0 0 40px rgba(204,51,255,0.4);
-      filter: drop-shadow(0 8px 16px rgba(255,51,102,0.35));
-      transition: all 0.4s ease;
     }
 
-    h1:hover { transform: scale(1.03); text-shadow: 0 0 30px rgba(255,51,102,0.9), 0 0 60px rgba(204,51,255,0.7); }
-
-    .theme-toggle {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border);
-      font-size: 1.9rem;
-      cursor: pointer;
-      padding: 10px;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 100;
-      backdrop-filter: blur(8px);
-      color: var(--text);
+    .header-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 20px 0 40px;
     }
 
-    .theme-toggle:hover {
-      transform: scale(1.15) rotate(20deg);
-      background: rgba(255,255,255,0.15);
-      box-shadow: 0 0 20px rgba(255,255,255,0.2);
-    }
-
-    .create-btn {
-      background: var(--primary);
-      color: white;
+    .create-btn, .search-btn {
       font-weight: 700;
       font-size: 1.3rem;
       padding: 14px 32px;
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      margin: 16px auto 40px;
-      display: block;
       transition: all 0.3s ease;
     }
 
-    .create-btn:hover {
-      background: var(--primary-dark);
-      transform: scale(1.05);
+    .create-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    .create-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+    .search-btn {
+      background: var(--accent);
+      color: white;
+    }
+
+    .search-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+
+    #search-input-container {
+      display: none;
+      max-width: 500px;
+      margin: 0 auto 32px;
+      text-align: center;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    #search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
     }
 
     #events-list {
@@ -152,11 +162,7 @@
       white-space: pre-wrap;
     }
 
-    .desc a {
-      color: var(--primary);
-      text-decoration: underline;
-    }
-
+    .desc a { color: var(--primary); text-decoration: underline; }
     .desc a:hover { color: var(--primary-dark); }
 
     .action-btn {
@@ -170,7 +176,6 @@
       border-radius: var(--radius);
       cursor: pointer;
       transition: all 0.3s ease;
-      letter-spacing: 1px;
       text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
@@ -186,106 +191,40 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* ── Create Event Modal ── */
+    /* Modal styles (create event) unchanged – keeping only essentials here */
     #create-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
     }
 
-    #create-modal.show {
-      display: flex;
-      opacity: 1;
-    }
+    #create-modal.show { display: flex; opacity: 1; }
 
     .modal-content {
-      background: var(--card);
-      border-radius: var(--radius);
-      width: 90%;
-      max-width: 460px;
-      padding: 28px;
-      position: relative;
-      box-shadow: var(--shadow-md);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
+      background: var(--card); border-radius: var(--radius); width: 90%; max-width: 460px;
+      padding: 28px; position: relative; box-shadow: var(--shadow-md);
     }
 
-    #create-modal.show .modal-content { transform: scale(1); }
+    .modal-close { position: absolute; top: 12px; right: 16px; font-size: 1.8rem; cursor: pointer; background: none; border: none; }
 
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 1.8rem;
-      color: var(--text-light);
-      cursor: pointer;
-      background: none;
-      border: none;
-    }
+    .modal-form label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-light); }
 
-    .modal-form label {
-      display: block;
-      margin: 16px 0 6px;
-      font-weight: 600;
-      color: var(--text-light);
-    }
-
-    .modal-form input,
-    .modal-form textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: var(--card);
-      color: var(--text);
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .modal-form input:focus,
-    .modal-form textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
+    .modal-form input, .modal-form textarea {
+      width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: var(--card); color: var(--text); resize: vertical;
     }
 
     .modal-submit {
-      background: var(--primary-dark);
-      color: white;
-      font-weight: 900;
-      font-size: 1.4rem;
-      padding: 18px;
-      border: none;
-      border-radius: var(--radius);
-      width: 100%;
-      cursor: pointer;
-      margin-top: 24px;
-      transition: all 0.3s ease;
+      background: var(--primary-dark); color: white; font-weight: 900; font-size: 1.4rem;
+      padding: 18px; border: none; border-radius: var(--radius); width: 100%; margin-top: 24px; cursor: pointer;
     }
 
-    .modal-submit:hover {
-      transform: scale(1.04);
-      box-shadow: 0 10px 20px rgba(194,24,91,0.4);
-    }
-
-    .modal-submit.loading {
-      background: #ad1457;
-      cursor: not-allowed;
-    }
+    .modal-submit.loading { background: #ad1457; cursor: not-allowed; }
 
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
     @media (min-width: 640px) {
       body { padding: 32px 24px; }
       #events-list { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
-      .app-title-container { margin: 0 auto 48px; }
     }
   </style>
 </head>
@@ -295,7 +234,14 @@
 
   <div class="app-title-container">
     <h1>Moments</h1>
-    <button class="create-btn" id="createEventBtn">Got a moment?</button>
+    <div class="header-buttons">
+      <button class="create-btn" id="createEventBtn">Got a moment?</button>
+      <button class="search-btn" id="toggleSearchBtn">Search 🔍</button>
+    </div>
+  </div>
+
+  <div id="search-input-container">
+    <input type="text" id="search-input" placeholder="Search moments (title, host, description)...">
   </div>
 
   <div id="loading">
@@ -309,7 +255,6 @@
   <div id="create-modal">
     <div class="modal-content">
       <button class="modal-close" onclick="closeCreateModal()">×</button>
-      
       <form class="modal-form" id="create-form">
         <label for="event-title">Title *</label>
         <input id="event-title" required placeholder="e.g. Sunset Yoga on the Hill">
@@ -329,25 +274,23 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8vatwoJQtwPIsTyYYlc5f-DDwe58WLMeVE9vc7wsauUi5b58dYzNHaaxD7WqYkSvU/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
 
     // Theme toggle
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
-    const savedTheme = localStorage.getItem('theme');
-    const initialTheme = savedTheme || 'dark';
-    html.setAttribute('data-theme', initialTheme);
-    themeBtn.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
+    themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 
     themeBtn.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme');
-      const newTheme = current === 'dark' ? 'light' : 'dark';
+      const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
 
-    // Create modal controls
+    // Create modal
     const createBtn = document.getElementById('createEventBtn');
     const createModal = document.getElementById('create-modal');
 
@@ -364,6 +307,34 @@
       if (e.target === createModal) closeCreateModal();
     });
 
+    // Search toggle + live filter
+    const toggleSearchBtn = document.getElementById('toggleSearchBtn');
+    const searchContainer = document.getElementById('search-input-container');
+    const searchInput = document.getElementById('search-input');
+
+    toggleSearchBtn.addEventListener('click', () => {
+      const isVisible = searchContainer.style.display !== 'none';
+      searchContainer.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) searchInput.focus();
+      else searchInput.value = ''; filterEvents();
+    });
+
+    searchInput.addEventListener('input', filterEvents);
+
+    let allEvents = [];
+    let currentFilter = '';
+
+    function filterEvents() {
+      currentFilter = searchInput.value.toLowerCase().trim();
+      const filtered = currentFilter
+        ? allEvents.filter(ev =>
+            ev.title.toLowerCase().includes(currentFilter) ||
+            ev.host.toLowerCase().includes(currentFilter) ||
+            ev.desc.toLowerCase().includes(currentFilter))
+        : allEvents;
+      renderEvents(filtered);
+    }
+
     async function submitNewEvent() {
       const title    = document.getElementById('event-title').value.trim();
       const host     = document.getElementById('event-host').value.trim();
@@ -372,7 +343,7 @@
       const submitBtn = document.getElementById('create-submit-btn');
 
       if (!title || !host || !endDate) {
-        alert("Please fill in Title, Host, and End Date 🌱");
+        alert("Please fill Title, Host and End Date 🌱");
         return;
       }
 
@@ -385,30 +356,27 @@
         title:   encodeURIComponent(title),
         host:    encodeURIComponent(host),
         desc:    encodeURIComponent(desc),
-        endDate: endDate
+        endDate
       });
 
       try {
         const res = await fetch(`${SCRIPT_URL}?${params}`);
         const result = await res.json();
-
         if (result.success) {
-          alert("Moment created! 🎉 It will appear soon.");
+          alert("Moment created! 🎉");
           closeCreateModal();
-          loadEvents(); // refresh list
+          loadEvents();
         } else {
-          alert("Something went wrong: " + (result.error || "Unknown issue"));
+          alert(`Error: ${result.error || "Unknown issue"}`);
         }
       } catch (err) {
-        alert("Connection error — please try again");
+        alert("Connection error – please try again");
       } finally {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
         submitBtn.textContent = "Create Moment ✨";
       }
     }
-
-    let allEvents = [];
 
     async function loadEvents() {
       const loadingEl = document.getElementById("loading");
@@ -419,6 +387,8 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         allEvents = data.events || [];
+        // Randomize once on load
+        allEvents.sort(() => Math.random() - 0.5);
         renderEvents(allEvents);
         loadingEl.style.display = "none";
         listEl.style.display = "grid";
@@ -434,7 +404,7 @@
       events.forEach((ev, i) => {
         const div = document.createElement("div");
         div.className = "event";
-        div.style.animationDelay = `${i * 100}ms`;
+        div.style.animationDelay = `${i * 80}ms`;
 
         const safeDesc = ev.desc ? autoLink(ev.desc) : "";
 
@@ -442,9 +412,7 @@
           <div class="event-header">
             <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
             <div class="meta">
-              with <strong>${ev.host}</strong> 
-              • <span class="join-count">${ev.count}</span> joined 
-              ${ev.max ? `(max ${ev.max})` : ""} 🔥
+              with <strong>${ev.host}</strong> • <span class="join-count">${ev.count}</span> joined 🔥
             </div>
             <div class="desc">${safeDesc}</div>
             <button class="action-btn" data-event-id="${ev.id}">
@@ -462,38 +430,36 @@
     function autoLink(text) {
       const urlRegex = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi;
       return text.replace(urlRegex, url => {
-        const href = url.startsWith('http') ? url : 'https://' + url;
+        const href = url.startsWith('http') ? url : `https://${url}`;
         return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
       });
     }
 
     async function handleJoinClick(btn, eventId) {
       if (btn.classList.contains('joined')) return;
-
       const countEl = btn.closest('.event').querySelector('.join-count');
-      const currentCount = parseInt(countEl.textContent) || 0;
+      const current = parseInt(countEl.textContent) || 0;
 
       btn.disabled = true;
       btn.classList.add('joined');
       btn.textContent = "Joined ✅";
 
       try {
-        const url = `${SCRIPT_URL}?action=signup&eventId=${eventId}&name=QuickJoin&phone=&email=quick@join.com`;
+        const url = `${SCRIPT_URL}?action=signup&eventId=${eventId}&name=QuickJoin&email=quick@join.com`;
         const res = await fetch(url);
         const result = await res.json();
-
         if (result.success) {
-          countEl.textContent = currentCount + 1;
+          countEl.textContent = current + 1;
         } else {
-          revertButton();
-          alert("Couldn't join — please try again");
+          revert();
+          alert("Couldn't join – try again");
         }
-      } catch (err) {
-        revertButton();
-        alert("Connection issue — try again later");
+      } catch {
+        revert();
+        alert("Connection issue");
       }
 
-      function revertButton() {
+      function revert() {
         btn.disabled = false;
         btn.classList.remove('joined');
         btn.textContent = "I'm in! 🎉";
