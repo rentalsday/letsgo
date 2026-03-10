@@ -77,7 +77,6 @@
         0 0 60px rgba(204, 51, 255, 0.7);
     }
 
-    /* Theme toggle button */
     .theme-toggle {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
@@ -100,7 +99,6 @@
       box-shadow: 0 0 20px rgba(255,255,255,0.2);
     }
 
-    /* Mobile adjustments */
     @media (max-width: 480px) {
       .theme-toggle {
         top: 12px;
@@ -113,126 +111,6 @@
         letter-spacing: -1px;
       }
     }
-
-    /* ──────────────────────────────────────
-       TODAY'S WINS SECTION (unchanged)
-    ────────────────────────────────────── */
-    #wins-section {
-      margin: 0 auto 40px;
-      max-width: 720px;
-      text-align: center;
-    }
-
-    #wins-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 16px;
-      letter-spacing: 0.5px;
-    }
-
-    #wins-feed {
-      height: 220px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 24px;
-      border-radius: var(--radius);
-      background: linear-gradient(to bottom, rgba(76,175,80,0.05), rgba(76,175,80,0.02));
-      border: 1px solid var(--border);
-      box-shadow: inset 0 2px 10px rgba(76,175,80,0.1);
-    }
-
-    .win-message {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      font-size: 1.35rem;
-      font-weight: 500;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1.4s ease;
-      color: var(--text);
-      line-height: 1.45;
-    }
-
-    .win-message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .win-emoji {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      opacity: 0.9;
-    }
-
-    .win-meta {
-      font-size: 0.95rem;
-      color: var(--text-light);
-      margin-top: 12px;
-      opacity: 0.85;
-    }
-
-    #wins-share-btn {
-      background: var(--accent);
-      color: white;
-      font-weight: 700;
-      padding: 16px 32px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: all 0.3s ease;
-      margin: 0 auto;
-      display: block;
-    }
-
-    #wins-share-btn:hover {
-      background: var(--accent-dark);
-      transform: scale(1.05);
-    }
-
-    .filter-container {
-      margin: 0 auto 24px;
-      max-width: 720px;
-      text-align: center;
-    }
-
-    select {
-      padding: 12px 16px;
-      font-size: 1.05rem;
-      border-radius: 12px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      width: 100%;
-      max-width: 320px;
-      cursor: pointer;
-    }
-
-    #loading {
-      text-align: center;
-      font-size: 1.3rem;
-      color: var(--text-light);
-      padding: 80px 0;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 5px solid var(--border);
-      border-top: 5px solid var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     #events-list {
       display: grid;
@@ -274,6 +152,17 @@
       font-size: 1rem;
       color: var(--text);
       margin-bottom: 16px;
+      white-space: pre-wrap;
+    }
+
+    .desc a {
+      color: var(--primary);
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .desc a:hover {
+      color: var(--primary-dark);
     }
 
     .action-btn {
@@ -291,110 +180,16 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
-    .action-btn:hover {
+    .action-btn.joined {
+      background: #2e7d32;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .action-btn:hover:not(.joined) {
       transform: scale(1.06) translateY(-3px);
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
-    }
-
-    #signup-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    #signup-modal.show {
-      display: flex;
-      opacity: 1;
-    }
-
-    .modal-content {
-      background: var(--card);
-      border-radius: var(--radius);
-      width: 90%;
-      max-width: 420px;
-      padding: 24px;
-      position: relative;
-      box-shadow: var(--shadow-md);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-
-    #signup-modal.show .modal-content {
-      transform: scale(1);
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 1.8rem;
-      color: var(--text-light);
-      cursor: pointer;
-      background: none;
-      border: none;
-    }
-
-    .modal-form input {
-      width: 100%;
-      padding: 14px 16px;
-      margin: 12px 0;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: var(--card);
-      color: var(--text);
-    }
-
-    .modal-form input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(233,30,99,0.2);
-    }
-
-    .modal-submit {
-      background: var(--primary-dark);
-      color: white;
-      font-weight: 900;
-      font-size: clamp(1.5rem, 6vw, 2.2rem);
-      padding: 20px 12px;
-      border: none;
-      border-radius: var(--radius);
-      width: 100%;
-      cursor: pointer;
-      margin-top: 16px;
-      transition: all 0.3s ease;
-      letter-spacing: 2px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .modal-submit:hover {
-      transform: scale(1.08) translateY(-4px);
-      box-shadow: 0 12px 30px rgba(194,24,91,0.6);
-    }
-
-    .modal-submit.loading {
-      background: #ad1457;
-      cursor: not-allowed;
-    }
-
-    .modal-submit.loading::after {
-      content: "";
-      width: 28px;
-      height: 28px;
-      border: 4px solid white;
-      border-top: 4px solid transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
     }
 
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
@@ -408,17 +203,10 @@
 </head>
 <body data-theme="dark">
 
-  <!-- Floating theme toggle -->
   <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">☀️</button>
 
   <div class="app-title-container">
     <h1>Moments</h1>
-  </div>
-
-  <div class="filter-container">
-    <select id="categoryFilter">
-      <option value="all">All Moments</option>
-    </select>
   </div>
 
   <div id="loading">
@@ -427,19 +215,6 @@
   </div>
 
   <div id="events-list" style="display:none;"></div>
-
-  <!-- Global Signup Modal -->
-  <div id="signup-modal">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">×</button>
-      
-      <form class="modal-form">
-        <input id="modal-name" placeholder="Your name *" required>
-        <input id="modal-email" placeholder="Email *" type="email" required>
-        <button type="button" class="modal-submit" id="modal-submit-btn" onclick="submitModalForm()">Blast off! 🚀</button>
-      </form>
-    </div>
-  </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXQgvXwOFt9OEwDLqeFrWQS3r_xAEFNmu51FWmvl4RcxZ8s6OqS1h4VOOOTemvgwP5/exec";
@@ -456,37 +231,22 @@
     themeBtn.addEventListener('click', () => {
       const current = html.getAttribute('data-theme');
       const newTheme = current === 'dark' ? 'light' : 'dark';
-      
       html.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
 
     let allEvents = [];
-    let currentEventId = null;
 
     async function loadEvents() {
       const loadingEl = document.getElementById("loading");
       const listEl = document.getElementById("events-list");
-      const filterEl = document.getElementById("categoryFilter");
 
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getEvents`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         allEvents = data.events || [];
-
-        const categories = new Set(["all"]);
-        allEvents.forEach(ev => categories.add((ev.category || "Other").toLowerCase()));
-
-        filterEl.innerHTML = '';
-        categories.forEach(cat => {
-          const opt = document.createElement("option");
-          opt.value = cat;
-          opt.textContent = cat === "all" ? "All Moments" : cat.charAt(0).toUpperCase() + cat.slice(1);
-          filterEl.appendChild(opt);
-        });
-
         renderEvents(allEvents);
         loadingEl.style.display = "none";
         listEl.style.display = "grid";
@@ -504,85 +264,73 @@
         div.className = "event";
         div.style.animationDelay = `${i * 100}ms`;
 
+        const safeDesc = ev.desc ? autoLink(ev.desc) : "";
+
         div.innerHTML = `
           <div class="event-header">
             <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
             <div class="meta">
               with <strong>${ev.host}</strong> 
-              • ${ev.count} joined 
+              • <span class="join-count">${ev.count}</span> joined 
               ${ev.max ? `(max ${ev.max})` : ""} 🔥
             </div>
-            <div class="desc">${ev.desc || ""}</div>
-            <button class="action-btn" onclick="openSignupModal('${ev.id}', '${ev.title.replace(/'/g, "\\'")}')">I'm in! 🎉</button>
+            <div class="desc">${safeDesc}</div>
+            <button class="action-btn" 
+                    data-event-id="${ev.id}"
+                    data-count-el="${ev.count}">
+              I'm in! 🎉
+            </button>
           </div>
         `;
         container.appendChild(div);
+
+        // Add click handler after element is in DOM
+        const btn = div.querySelector('.action-btn');
+        btn.addEventListener('click', () => handleJoinClick(btn, ev.id));
       });
     }
 
-    function openSignupModal(eventId, eventTitle) {
-      currentEventId = eventId;
-      document.getElementById("modal-name").value = "";
-      document.getElementById("modal-email").value = "";
-      document.getElementById("signup-modal").classList.add("show");
+    function autoLink(text) {
+      const urlRegex = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi;
+      return text.replace(urlRegex, url => {
+        const href = url.startsWith('http') ? url : 'https://' + url;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
     }
 
-    function closeModal() {
-      document.getElementById("signup-modal").classList.remove("show");
-      currentEventId = null;
-    }
+    async function handleJoinClick(btn, eventId) {
+      if (btn.classList.contains('joined')) return;
 
-    document.getElementById("signup-modal").addEventListener("click", (e) => {
-      if (e.target === document.getElementById("signup-modal")) {
-        closeModal();
-      }
-    });
+      const countEl = btn.closest('.event').querySelector('.join-count');
+      const currentCount = parseInt(countEl.textContent) || 0;
 
-    async function submitModalForm() {
-      if (!currentEventId) return;
-
-      const name  = document.getElementById("modal-name").value.trim();
-      const email = document.getElementById("modal-email").value.trim();
-      const submitBtn = document.getElementById("modal-submit-btn");
-
-      if (!name || !email) {
-        alert("Please fill in your name and email 🌸");
-        return;
-      }
-
-      submitBtn.classList.add("loading");
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = "";
-
-      const url = `${SCRIPT_URL}?action=signup&eventId=${currentEventId}&name=${encodeURIComponent(name)}&phone=&email=${encodeURIComponent(email)}`;
+      btn.disabled = true;
+      btn.classList.add('joined');
+      btn.textContent = "Joined ✅";
 
       try {
+        const url = `${SCRIPT_URL}?action=signup&eventId=${eventId}&name=QuickJoin&phone=&email=quick@join.com`;
         const res = await fetch(url);
         const result = await res.json();
 
         if (result.success) {
-          alert("You're in! 🙌✨");
-          closeModal();
-          loadEvents();
+          const newCount = currentCount + 1;
+          countEl.textContent = newCount;
         } else {
-          alert("Sorry — something went wrong. Try again.");
+          // revert on failure
+          btn.disabled = false;
+          btn.classList.remove('joined');
+          btn.textContent = "I'm in! 🎉";
+          alert("Couldn't join — please try again");
         }
       } catch (err) {
-        alert("Connection issue — check your internet 🌐");
-      } finally {
-        submitBtn.classList.remove("loading");
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = "Blast off! 🚀";
+        // revert on error
+        btn.disabled = false;
+        btn.classList.remove('joined');
+        btn.textContent = "I'm in! 🎉";
+        alert("Connection issue — try again later");
       }
     }
-
-    document.getElementById("categoryFilter").addEventListener("change", (e) => {
-      const selected = e.target.value.toLowerCase();
-      const filtered = selected === "all" 
-        ? allEvents 
-        : allEvents.filter(ev => (ev.category || "Other").toLowerCase() === selected);
-      renderEvents(filtered);
-    });
 
     function getEmoji(title) {
       const t = title.toLowerCase();
