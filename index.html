@@ -215,7 +215,13 @@
       width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
       border-radius: 12px; background: var(--card); color: var(--text); font-size: 1rem;
     }
-    .modal-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 12px; }
+    .modal-form select { 
+      appearance: none; 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); 
+      background-repeat: no-repeat; 
+      background-position: right 16px center; 
+      background-size: 12px; 
+    }
     .modal-submit {
       background: var(--primary-dark); color: white; font-weight: 900; font-size: 1.4rem;
       padding: 18px; border: none; border-radius: var(--radius); width: 100%; margin-top: 24px; cursor: pointer;
@@ -290,7 +296,7 @@
         <label for="event-desc">Description</label>
         <textarea id="event-desc" rows="4" placeholder="What’s happening? Any details, links, vibes..."></textarea>
 
-        <button type="button" class="modal-submit" id="create-submit-btn" onclick="submitNewEvent()">Create Moment ✨</button>
+        <button type="button" class="modal-submit" id="create-submit-btn">Create Moment ✨</button>
       </form>
     </div>
   </div>
@@ -298,7 +304,7 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8vatwoJQtwPIsTyYYlc5f-DDwe58WLMeVE9vc7wsauUi5b58dYzNHaaxD7WqYkSvU/exec";
 
-    // Theme toggle
+    // Theme toggle (unchanged)
     const themeBtn = document.getElementById('themeBtn');
     const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -329,7 +335,7 @@
       if (e.target === createModal) closeCreateModal();
     });
 
-    // Search
+    // Search (unchanged)
     const toggleSearchBtn = document.getElementById('toggleSearchBtn');
     const searchContainer = document.getElementById('search-input-container');
     const searchInput = document.getElementById('search-input');
@@ -365,8 +371,9 @@
       const desc      = document.getElementById('event-desc').value.trim();
       const submitBtn = document.getElementById('create-submit-btn');
 
+      // Client-side validation - must match server
       if (!title || !host) {
-        alert("Please fill Title and Host 🌱");
+        alert("Title and Host are required 🌱\n\nPlease fill both fields.");
         return;
       }
 
@@ -378,23 +385,27 @@
         action: 'createEvent',
         title:   encodeURIComponent(title),
         host:    encodeURIComponent(host),
-        category: encodeURIComponent(category),
+        category: encodeURIComponent(category || "Other"),
         desc:    encodeURIComponent(desc)
-        // endDate intentionally removed
       });
+
+      // Temporary debug: see what is actually being sent (remove later if you want)
+      console.log("Creating event with params:", Object.fromEntries(params));
 
       try {
         const res = await fetch(`${SCRIPT_URL}?${params}`);
         const result = await res.json();
+
         if (result.success) {
           alert("Moment created! 🎉 It will appear soon.");
           closeCreateModal();
           loadEvents();
         } else {
-          alert(`Error: ${result.error || "Unknown issue"}`);
+          alert(`Error from server: ${result.error || "Unknown issue"}\n\nCheck console for details.`);
         }
       } catch (err) {
-        alert("Connection error – please try again");
+        alert("Connection error – please check your internet and try again");
+        console.error("Fetch error:", err);
       } finally {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
@@ -504,6 +515,9 @@
       if (t.includes("yoga") || t.includes("move")) return "🧘‍♀️💫";
       return "🌟";
     }
+
+    // Attach submit handler (removed onclick from HTML)
+    document.getElementById('create-submit-btn').addEventListener('click', submitNewEvent);
 
     loadEvents();
   </script>
