@@ -364,54 +364,72 @@
       renderEvents(filtered);
     }
 
-    async function submitNewEvent() {
-      const title     = document.getElementById('event-title').value.trim();
-      const host      = document.getElementById('event-host').value.trim();
-      const category  = document.getElementById('event-category').value.trim();
-      const desc      = document.getElementById('event-desc').value.trim();
-      const submitBtn = document.getElementById('create-submit-btn');
+async function submitNewEvent() {
+  const title     = document.getElementById('event-title').value.trim();
+  const host      = document.getElementById('event-host').value.trim();
+  const category  = document.getElementById('event-category').value.trim();
+  const desc      = document.getElementById('event-desc').value.trim();
+  const submitBtn = document.getElementById('create-submit-btn');
 
-      // Client-side validation - must match server
-      if (!title || !host) {
-        alert("Title and Host are required 🌱\n\nPlease fill both fields.");
-        return;
-      }
+  if (!title || !host) {
+    alert("Title and Host are both required.\n\nTitle: " + (title ? "✓ filled" : "✗ empty") + "\nHost:  " + (host ? "✓ filled" : "✗ empty"));
+    return;
+  }
 
-      submitBtn.classList.add('loading');
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Creating...";
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating...";
 
-      const params = new URLSearchParams({
-        action: 'createEvent',
-        title:   encodeURIComponent(title),
-        host:    encodeURIComponent(host),
-        category: encodeURIComponent(category || "Other"),
-        desc:    encodeURIComponent(desc)
-      });
+  const params = new URLSearchParams({
+    action:   'createEvent',
+    title:    encodeURIComponent(title),
+    host:     encodeURIComponent(host),
+    category: encodeURIComponent(category || "Other"),
+    desc:     encodeURIComponent(desc || "")
+  });
 
-      // Temporary debug: see what is actually being sent (remove later if you want)
-      console.log("Creating event with params:", Object.fromEntries(params));
+  // ────────────────────────────────────────────────
+  // Debug: show exactly what is being sent
+  console.log("→ Sending to server:");
+  console.log("Full URL:", `${SCRIPT_URL}?${params.toString()}`);
+  console.log("Decoded values:", {
+    title: title,
+    host: host,
+    category: category || "Other",
+    desc: desc
+  });
+  // ────────────────────────────────────────────────
 
-      try {
-        const res = await fetch(`${SCRIPT_URL}?${params}`);
-        const result = await res.json();
+  try {
+    const res = await fetch(`${SCRIPT_URL}?${params}`);
+    const text = await res.text();           // get raw response first
+    console.log("← Server raw response:", text);
 
-        if (result.success) {
-          alert("Moment created! 🎉 It will appear soon.");
-          closeCreateModal();
-          loadEvents();
-        } else {
-          alert(`Error from server: ${result.error || "Unknown issue"}\n\nCheck console for details.`);
-        }
-      } catch (err) {
-        alert("Connection error – please check your internet and try again");
-        console.error("Fetch error:", err);
-      } finally {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Create Moment ✨";
-      }
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch (e) {
+      console.error("JSON parse failed:", e);
+      alert("Server returned invalid response (not JSON).\nCheck console for raw response.");
+      throw e;
     }
+
+    if (result.success) {
+      alert("Moment created! 🎉 It will appear soon.");
+      closeCreateModal();
+      loadEvents();
+    } else {
+      alert(`Server error: ${result.error || "Unknown problem"}\n\nCheck console (F12) for details.`);
+    }
+  } catch (err) {
+    console.error("Fetch / network error:", err);
+    alert("Could not reach the server. Check your connection or SCRIPT_URL.");
+  } finally {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Moment ✨";
+  }
+}
 
     async function loadEvents() {
       const loadingEl = document.getElementById("loading");
