@@ -65,7 +65,6 @@
       text-shadow: 0 0 20px rgba(255,51,102,0.6), 0 0 40px rgba(204,51,255,0.4);
     }
 
-    /* Theme toggle - locked top-right */
     .theme-toggle {
       position: fixed;
       top: 16px;
@@ -192,7 +191,6 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
-    /* Create Modal */
     #create-modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       display: none; align-items: center; justify-content: center; z-index: 1000;
@@ -216,7 +214,6 @@
 
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
-    /* Mobile fixes: buttons side-by-side + better spacing */
     @media (max-width: 480px) {
       .header-buttons {
         flex-wrap: nowrap;
@@ -304,7 +301,7 @@
       themeBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
     });
 
-    // Create modal - fully restored
+    // Create modal
     const createBtn = document.getElementById('createEventBtn');
     const createModal = document.getElementById('create-modal');
 
@@ -321,7 +318,7 @@
       if (e.target === createModal) closeCreateModal();
     });
 
-    // Search toggle
+    // Search toggle & filter
     const toggleSearchBtn = document.getElementById('toggleSearchBtn');
     const searchContainer = document.getElementById('search-input-container');
     const searchInput = document.getElementById('search-input');
@@ -401,7 +398,11 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         allEvents = data.events || [];
-        allEvents.sort(() => Math.random() - 0.5);
+        
+        // Removed random sort — counts were getting assigned to wrong cards
+        // You can add stable sort if desired, e.g.:
+        // allEvents.sort((a,b) => b.id.localeCompare(a.id)); // newest first
+
         renderEvents(allEvents);
         loadingEl.style.display = "none";
         listEl.style.display = "grid";
@@ -417,6 +418,7 @@
       events.forEach((ev, i) => {
         const div = document.createElement("div");
         div.className = "event";
+        div.dataset.eventId = ev.id;                    // Key fix: track by event ID
         div.style.animationDelay = `${i * 80}ms`;
 
         const safeDesc = ev.desc ? autoLink(ev.desc) : "";
@@ -450,32 +452,41 @@
 
     async function handleJoinClick(btn, eventId) {
       if (btn.classList.contains('joined')) return;
-      const countEl = btn.closest('.event').querySelector('.join-count');
-      const current = parseInt(countEl.textContent) || 0;
 
+      // Find the correct card and count element using event ID
+      const eventCard = document.querySelector(`.event[data-event-id="${eventId}"]`);
+      if (!eventCard) return;
+
+      const countEl = eventCard.querySelector('.join-count');
+      const current = parseInt(countEl.textContent.trim()) || 0;
+
+      // Optimistic UI update
       btn.disabled = true;
       btn.classList.add('joined');
       btn.textContent = "Joined ✅";
+      countEl.textContent = current + 1;
 
       try {
-        const url = `${SCRIPT_URL}?action=signup&eventId=${eventId}&name=QuickJoin&email=quick@join.com`;
+        const url = `${SCRIPT_URL}?action=signup&eventId=${encodeURIComponent(eventId)}&name=QuickJoin&email=quick@join.com`;
         const res = await fetch(url);
         const result = await res.json();
-        if (result.success) {
-          countEl.textContent = current + 1;
-        } else {
-          revert();
-          alert("Couldn't join – try again");
+
+        if (!result.success) {
+          revertUI();
+          alert(result.error || "Couldn't join – try again");
         }
-      } catch {
-        revert();
-        alert("Connection issue");
+        // success → server now has count +1
+
+      } catch (err) {
+        revertUI();
+        alert("Connection issue – please try again");
       }
 
-      function revert() {
+      function revertUI() {
         btn.disabled = false;
         btn.classList.remove('joined');
         btn.textContent = "I'm in! 🎉";
+        countEl.textContent = current;
       }
     }
 
@@ -487,6 +498,7 @@
       return "🌟";
     }
 
+    // Initial load
     loadEvents();
   </script>
 </body>
