@@ -160,7 +160,15 @@
 
     .event-header { padding: 20px; }
     .title { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
-    .meta { font-size: 0.95rem; color: var(--text-light); margin-bottom: 12px; }
+    .meta { font-size: 0.95rem; color: var(--text-light); margin-bottom: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .category-badge {
+      background: rgba(233,30,99,0.15);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
     .desc { font-size: 1rem; color: var(--text); margin-bottom: 16px; white-space: pre-wrap; }
     .desc a { color: var(--primary); text-decoration: underline; }
     .desc a:hover { color: var(--primary-dark); }
@@ -191,6 +199,7 @@
       box-shadow: 0 10px 25px rgba(76,175,80,0.5);
     }
 
+    /* Create Modal */
     #create-modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       display: none; align-items: center; justify-content: center; z-index: 1000;
@@ -202,10 +211,11 @@
     }
     .modal-close { position: absolute; top: 12px; right: 16px; font-size: 1.8rem; cursor: pointer; background: none; border: none; }
     .modal-form label { display: block; margin: 16px 0 6px; font-weight: 600; color: var(--text-light); }
-    .modal-form input, .modal-form textarea {
+    .modal-form input, .modal-form textarea, .modal-form select {
       width: 100%; padding: 14px 16px; border: 1.5px solid var(--border);
-      border-radius: 12px; background: var(--card); color: var(--text); resize: vertical;
+      border-radius: 12px; background: var(--card); color: var(--text); font-size: 1rem;
     }
+    .modal-form select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 12px; }
     .modal-submit {
       background: var(--primary-dark); color: white; font-weight: 900; font-size: 1.4rem;
       padding: 18px; border: none; border-radius: var(--radius); width: 100%; margin-top: 24px; cursor: pointer;
@@ -215,17 +225,8 @@
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
     @media (max-width: 480px) {
-      .header-buttons {
-        flex-wrap: nowrap;
-        gap: 12px;
-        padding: 0 10px;
-      }
-      .create-btn, .search-btn {
-        font-size: 1.05rem;
-        padding: 12px 20px;
-        flex: 1;
-        min-width: 0;
-      }
+      .header-buttons { flex-wrap: nowrap; gap: 12px; padding: 0 10px; }
+      .create-btn, .search-btn { font-size: 1.05rem; padding: 12px 20px; flex: 1; min-width: 0; }
     }
 
     @media (max-width: 360px) {
@@ -252,7 +253,7 @@
   </div>
 
   <div id="search-input-container">
-    <input type="text" id="search-input" placeholder="Search moments (title, host, description)...">
+    <input type="text" id="search-input" placeholder="Search title, host, description, category...">
   </div>
 
   <div id="loading">
@@ -273,11 +274,21 @@
         <label for="event-host">Host *</label>
         <input id="event-host" required placeholder="Your name or group">
 
+        <label for="event-category">Category</label>
+        <select id="event-category">
+          <option value="">Select category (optional)</option>
+          <option value="Yoga & Movement">Yoga & Movement</option>
+          <option value="Music & Singing">Music & Singing</option>
+          <option value="Meditation & Prayer">Meditation & Prayer</option>
+          <option value="Workshop">Workshop</option>
+          <option value="Social">Social / Hangout</option>
+          <option value="Nature">Nature / Outdoor</option>
+          <option value="Art & Creativity">Art & Creativity</option>
+          <option value="Other">Other</option>
+        </select>
+
         <label for="event-desc">Description</label>
         <textarea id="event-desc" rows="4" placeholder="What’s happening? Any details, links, vibes..."></textarea>
-
-        <label for="event-end-date">Ends on *</label>
-        <input id="event-end-date" type="date" required>
 
         <button type="button" class="modal-submit" id="create-submit-btn" onclick="submitNewEvent()">Create Moment ✨</button>
       </form>
@@ -318,7 +329,7 @@
       if (e.target === createModal) closeCreateModal();
     });
 
-    // Search toggle & filter
+    // Search
     const toggleSearchBtn = document.getElementById('toggleSearchBtn');
     const searchContainer = document.getElementById('search-input-container');
     const searchInput = document.getElementById('search-input');
@@ -341,20 +352,21 @@
         ? allEvents.filter(ev =>
             ev.title.toLowerCase().includes(currentFilter) ||
             ev.host.toLowerCase().includes(currentFilter) ||
+            (ev.category || "").toLowerCase().includes(currentFilter) ||
             ev.desc.toLowerCase().includes(currentFilter))
         : allEvents;
       renderEvents(filtered);
     }
 
     async function submitNewEvent() {
-      const title    = document.getElementById('event-title').value.trim();
-      const host     = document.getElementById('event-host').value.trim();
-      const desc     = document.getElementById('event-desc').value.trim();
-      const endDate  = document.getElementById('event-end-date').value;
+      const title     = document.getElementById('event-title').value.trim();
+      const host      = document.getElementById('event-host').value.trim();
+      const category  = document.getElementById('event-category').value.trim();
+      const desc      = document.getElementById('event-desc').value.trim();
       const submitBtn = document.getElementById('create-submit-btn');
 
-      if (!title || !host || !endDate) {
-        alert("Please fill Title, Host and End Date 🌱");
+      if (!title || !host) {
+        alert("Please fill Title and Host 🌱");
         return;
       }
 
@@ -366,8 +378,9 @@
         action: 'createEvent',
         title:   encodeURIComponent(title),
         host:    encodeURIComponent(host),
-        desc:    encodeURIComponent(desc),
-        endDate
+        category: encodeURIComponent(category),
+        desc:    encodeURIComponent(desc)
+        // endDate intentionally removed
       });
 
       try {
@@ -398,11 +411,6 @@
         if (!res.ok) throw new Error();
         const data = await res.json();
         allEvents = data.events || [];
-        
-        // Removed random sort — counts were getting assigned to wrong cards
-        // You can add stable sort if desired, e.g.:
-        // allEvents.sort((a,b) => b.id.localeCompare(a.id)); // newest first
-
         renderEvents(allEvents);
         loadingEl.style.display = "none";
         listEl.style.display = "grid";
@@ -418,16 +426,19 @@
       events.forEach((ev, i) => {
         const div = document.createElement("div");
         div.className = "event";
-        div.dataset.eventId = ev.id;                    // Key fix: track by event ID
+        div.dataset.eventId = ev.id;
         div.style.animationDelay = `${i * 80}ms`;
 
         const safeDesc = ev.desc ? autoLink(ev.desc) : "";
+        const categoryHtml = ev.category ? `<span class="category-badge">${ev.category}</span>` : "";
 
         div.innerHTML = `
           <div class="event-header">
             <div class="title">${ev.title} ${getEmoji(ev.title)}</div>
             <div class="meta">
-              with <strong>${ev.host}</strong> • <span class="join-count">${ev.count}</span> joined 🔥
+              with <strong>${ev.host}</strong>
+              ${categoryHtml ? ' • ' + categoryHtml : ''}
+              • <span class="join-count">${ev.count}</span> joined 🔥
             </div>
             <div class="desc">${safeDesc}</div>
             <button class="action-btn" data-event-id="${ev.id}">
@@ -453,14 +464,12 @@
     async function handleJoinClick(btn, eventId) {
       if (btn.classList.contains('joined')) return;
 
-      // Find the correct card and count element using event ID
       const eventCard = document.querySelector(`.event[data-event-id="${eventId}"]`);
       if (!eventCard) return;
 
       const countEl = eventCard.querySelector('.join-count');
       const current = parseInt(countEl.textContent.trim()) || 0;
 
-      // Optimistic UI update
       btn.disabled = true;
       btn.classList.add('joined');
       btn.textContent = "Joined ✅";
@@ -475,8 +484,6 @@
           revertUI();
           alert(result.error || "Couldn't join – try again");
         }
-        // success → server now has count +1
-
       } catch (err) {
         revertUI();
         alert("Connection issue – please try again");
@@ -498,7 +505,6 @@
       return "🌟";
     }
 
-    // Initial load
     loadEvents();
   </script>
 </body>
